@@ -190,7 +190,7 @@ export class LetterService extends MysqlService {
 
 			const output = await this.letterRepository.save({
 				...payload,
-				userId: user['id'] || '',
+				userId: payload['userId'] || user['id'] || '',
 			});
 
 			await queryRunner.commitTransaction();

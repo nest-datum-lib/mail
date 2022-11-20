@@ -137,7 +137,7 @@ export class ReportService extends MysqlService {
 
 			const output = await this.reportRepository.save({
 				...payload,
-				userId: user['id'] || '',
+				userId: payload['userId'] || user['id'] || '',
 			});
 
 			await queryRunner.commitTransaction();
@@ -163,10 +163,7 @@ export class ReportService extends MysqlService {
 			await this.cacheService.clear(`${process.env.APP_ID}.report.many`);
 			await this.cacheService.clear(`${process.env.APP_ID}.report.one`);
 			
-			await this.updateWithId(this.reportRepository, {
-				...payload,
-				userId: user['id'] || '',
-			});
+			await this.updateWithId(this.reportRepository, payload);
 			
 			await queryRunner.commitTransaction();
 			

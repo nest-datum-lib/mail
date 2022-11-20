@@ -189,7 +189,7 @@ export class TemplateService extends MysqlService {
 
 			const output = await this.templateRepository.save({
 				...payload,
-				userId: user['id'] || '',
+				userId: payload['userId'] || user['id'] || '',
 			});
 
 			await queryRunner.commitTransaction();

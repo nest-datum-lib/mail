@@ -158,7 +158,7 @@ export class LetterOptionService extends MysqlService {
 
 			const output = await this.letterOptionRepository.save({
 				...payload,
-				userId: user['id'] || '',
+				userId: payload['userId'] || user['id'] || '',
 			});
 
 			await queryRunner.commitTransaction();
