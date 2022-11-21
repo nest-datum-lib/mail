@@ -39,6 +39,7 @@ export class LetterService extends MysqlService {
 	protected selectDefaultMany = {
 		id: true,
 		userId: true,
+		templateId: true,
 		letterStatusId: true,
 		name: true,
 		description: true,
