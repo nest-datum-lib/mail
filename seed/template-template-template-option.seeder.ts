@@ -22,12 +22,12 @@ export class TemplateTemplateTemplateOptionSeeder {
 			// new transaction
 			await queryRunner.startTransaction();
 			await Bluebird.each([{
-				templateId: 'template-register',
-				templateTemplateOptionId: 'template-template-option-register',
+				templateId: 'mail-template-register',
+				templateTemplateOptionId: 'mail-template-template-option-register',
 				content: '/views',
 			}, {
-				templateId: 'template-recovery',
-				templateTemplateOptionId: 'template-template-option-recovery',
+				templateId: 'mail-template-recovery',
+				templateTemplateOptionId: 'mail-template-template-option-recovery',
 				content: '/views',
 			}], async (data) => {
 				try {

@@ -24,18 +24,18 @@ export class TemplateSeeder {
 			// new transaction
 			await queryRunner.startTransaction();
 			await Bluebird.each([{
-				id: 'template-register',
-				userId: 'user-admin',
-				templateStatusId: 'template-status-active',
+				id: 'mail-template-register',
+				userId: 'sso-user-admin',
+				templateStatusId: 'mail-template-status-active',
 				name: 'Register',
 				description: 'Template of the letter with a link to confirm registration.',
 				isNotDelete: true,
 				fromEmail: 'ihor.bielchenko@gmail.com',
 				fromName: 'nest-studio',
 			}, {
-				id: 'template-recovery',
-				userId: 'user-admin',
-				templateStatusId: 'template-status-active',
+				id: 'mail-template-recovery',
+				userId: 'sso-user-admin',
+				templateStatusId: 'mail-template-status-active',
 				name: 'Recovery',
 				description: 'Template of the letter to confirm the restoration of access to the account.',
 				isNotDelete: true,

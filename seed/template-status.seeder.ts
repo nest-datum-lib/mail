@@ -22,9 +22,10 @@ export class TemplateStatusSeeder {
 			// new transaction
 			await queryRunner.startTransaction();
 			await Bluebird.each([{
-				id: 'template-status-active',
+				id: 'mail-template-status-active',
 				name: 'Active',
 				description: 'Template is active.',
+				userId: 'sso-user-admin',
 			}], async (data) => {
 				try {
 					await this.templateStatusRepository.insert(data);

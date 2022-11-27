@@ -22,9 +22,10 @@ export class LetterStatusSeeder {
 			// new transaction
 			await queryRunner.startTransaction();
 			await Bluebird.each([{
-				id: 'letter-status-active',
+				id: 'mail-letter-status-active',
 				name: 'Active',
 				description: 'Letter is active',
+				userId: 'sso-user-admin',
 			}], async (data) => {
 				try {
 					await this.letterStatusRepository.insert(data);

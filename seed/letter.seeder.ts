@@ -24,20 +24,20 @@ export class LetterSeeder {
 			// new transaction
 			await queryRunner.startTransaction();
 			await Bluebird.each([{
-				id: 'letter-register',
-				userId: 'user-admin',
-				letterStatusId: 'letter-status-active',
-				templateId: 'template-register',
+				id: 'mail-letter-register',
+				userId: 'sso-user-admin',
+				letterStatusId: 'mail-letter-status-active',
+				templateId: 'mail-template-register',
 				name: 'Register',
 				description: 'Letter with a link to confirm registration.',
 				subject: 'Completion of registration',
 				textPart: 'Completion of registration',
 				isNotDelete: true,
 			}, {
-				id: 'letter-recovery',
-				userId: 'user-admin',
-				letterStatusId: 'letter-status-active',
-				templateId: 'template-recovery',
+				id: 'mail-letter-recovery',
+				userId: 'sso-user-admin',
+				letterStatusId: 'mail-letter-status-active',
+				templateId: 'mail-template-recovery',
 				name: 'Recovery',
 				description: 'Account recovery.',
 				subject: 'Account recovery',

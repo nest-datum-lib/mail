@@ -22,11 +22,12 @@ export class TemplateOptionSeeder {
 			// new transaction
 			await queryRunner.startTransaction();
 			await Bluebird.each([{
-				id: 'template-option-view',
+				id: 'mail-template-option-view',
 				name: 'View',
 				description: 'View file.',
 				dataTypeId: 'file',
-				isRequired: true,			
+				isRequired: true,
+				userId: 'sso-user-admin',		
 			}], async (data) => {
 				try {
 					await this.templateOptionRepository.insert(data);
