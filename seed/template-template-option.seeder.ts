@@ -23,7 +23,7 @@ export class TemplateTemplateOptionSeeder {
 			await queryRunner.startTransaction();
 			await Bluebird.each([{
 				id: 'mail-t-t-option-register',
-				templateId: 'mail-emplate-register',
+				templateId: 'mail-template-register',
 				templateOptionId: 'mail-template-option-view',
 			}, {
 				id: 'mail-t-t-option-recovery',
