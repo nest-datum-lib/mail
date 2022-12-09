@@ -4,6 +4,7 @@ import {
 	BalancerRepository,
 	BalancerService, 
 } from 'nest-datum/balancer/src';
+import { CacheService } from 'nest-datum/cache/src';
 import { Letter } from '../letter/letter.entity';
 import { TemplateStatus } from '../template-status/template-status.entity';
 import { TemplateTemplateTemplateOption } from '../template-template-template-option/template-template-template-option.entity';
