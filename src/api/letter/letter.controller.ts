@@ -1,19 +1,18 @@
 import getCurrentLine from 'get-current-line';
-import * as Validators from '@nest-datum/validators';
 import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
 import { 
-	RegistryService,
-	LogsService, 
-} from '@nest-datum/services';
+	MessagePattern,
+	EventPattern, 
+} from '@nestjs/microservices';
+import { BalancerService } from 'nest-datum/balancer/src';
+import * as Validators from 'nest-datum/validators/src';
 import { LetterService } from './letter.service';
 
 @Controller()
 export class LetterController {
 	constructor(
-		private readonly registryService: RegistryService,
-		private readonly logsService: LogsService,
 		private readonly letterService: LetterService,
+		private readonly balancerService: BalancerService,
 	) {
 	}
 
@@ -22,12 +21,8 @@ export class LetterController {
 		try {
 			const many = await this.letterService.many({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_LETTER_MANY'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				relations: Validators.obj('relations', payload['relations']),
 				select: Validators.obj('select', payload['select']),
@@ -47,7 +42,7 @@ export class LetterController {
 				}),
 			});
 
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return {
 				total: many[1],
@@ -55,8 +50,8 @@ export class LetterController {
 			};
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}
@@ -67,12 +62,8 @@ export class LetterController {
 		try {
 			const output = await this.letterService.one({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_LETTER_ONE'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				relations: Validators.obj('relations', payload['relations']),
 				select: Validators.obj('select', payload['select']),
@@ -81,114 +72,98 @@ export class LetterController {
 				}),
 			});
 
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return output;
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}
 	}
 
-	@MessagePattern({ cmd: 'letter.drop' })
+	@EventPattern('letter.drop')
 	async drop(payload) {
 		try {
 			await this.letterService.drop({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_LETTER_DROP'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				id: Validators.id('id', payload['id'], {
 					isRequired: true,
 				}),
 			});
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return true;
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}
 	}
 
-	@MessagePattern({ cmd: 'letter.dropMany' })
+	@EventPattern('letter.dropMany')
 	async dropMany(payload) {
 		try {
 			await this.letterService.dropMany({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_LETTER_DROP_MANY'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				ids: Validators.arr('ids', payload['ids'], {
 					isRequired: true,
 					min: 1,
 				}),
 			});
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return true;
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}
 	}
 
-	@MessagePattern({ cmd: 'letter.dropOption' })
+	@EventPattern('letter.dropOption')
 	async dropOption(payload) {
 		try {
 			await this.letterService.dropOption({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_LETTER_DROP_OPTION'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				id: Validators.id('id', payload['id'], {
 					isRequired: true,
 				}),
 			});
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return true;
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}
 	}
 
-	@MessagePattern({ cmd: 'letter.create' })
+	@EventPattern('letter.create')
 	async create(payload) {
 		try {
 			const output = await this.letterService.create({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_LETTER_CREATE'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				id: Validators.id('id', payload['id']),
 				userId: Validators.id('userId', payload['userId']),
@@ -220,29 +195,25 @@ export class LetterController {
 				isNotDelete: Validators.bool('isNotDelete', payload['isNotDelete']),
 			});
 
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return output;
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}
 	}
 
-	@MessagePattern({ cmd: 'letter.createOption' })
+	@EventPattern('letter.createOption')
 	async createOption(payload) {
 		try {
 			const output = await this.letterService.createOption({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_LETTER_CREATE_OPTION'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				id: Validators.id('id', payload['id']),
 				optionId: Validators.id('optionId', payload['optionId'], {
@@ -251,29 +222,25 @@ export class LetterController {
 				data: Validators.arr('data', payload['data']) || {},
 			});
 
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return output;
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}
 	}
 
-	@MessagePattern({ cmd: 'letter.createOptions' })
+	@EventPattern('letter.createOptions')
 	async createOptions(payload) {
 		try {
 			const output = await this.letterService.createOptions({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_LETTER_CREATE_OPTIONS'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				id: Validators.id('id', payload['id']),
 				data: Validators.arr('data', payload['data'], {
@@ -281,29 +248,25 @@ export class LetterController {
 				}),
 			});
 
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return output;
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}
 	}
 
-	@MessagePattern({ cmd: 'letter.update' })
+	@EventPattern('letter.update')
 	async update(payload) {
 		try {
 			await this.letterService.update({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_LETTER_UPDATE'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				id: Validators.id('id', payload['id']),
 				newId: Validators.id('newId', payload['newId']),
@@ -334,13 +297,13 @@ export class LetterController {
 				isDeleted: Validators.bool('isDeleted', payload['isDeleted']),
 				createdAt: Validators.date('createdAt', payload['createdAt']),
 			});
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return true;
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}

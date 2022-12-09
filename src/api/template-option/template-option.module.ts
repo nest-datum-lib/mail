@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { 
-	RegistryService,
-	LogsService,
-	CacheService,
-} from '@nest-datum/services';
+	BalancerRepository,
+	BalancerService, 
+} from 'nest-datum/balancer/src';
+import { CacheService } from 'nest-datum/cache/src';
 import { TemplateTemplateOption } from '../template-template-option/template-template-option.entity';
 import { TemplateOption } from './template-option.entity';
 import { TemplateOptionService } from './template-option.service';
@@ -13,12 +13,14 @@ import { TemplateOptionController } from './template-option.controller';
 @Module({
 	controllers: [ TemplateOptionController ],
 	imports: [
-		TypeOrmModule.forFeature([ TemplateOption ]),
-		TypeOrmModule.forFeature([ TemplateTemplateOption ]),
+		TypeOrmModule.forFeature([ 
+			TemplateOption,
+			TemplateTemplateOption, 
+		]),
 	],
 	providers: [
-		RegistryService, 
-		LogsService,
+		BalancerRepository, 
+		BalancerService,
 		CacheService,
 		TemplateOptionService, 
 	],

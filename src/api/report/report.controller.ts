@@ -1,19 +1,18 @@
 import getCurrentLine from 'get-current-line';
-import * as Validators from '@nest-datum/validators';
 import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
 import { 
-	RegistryService,
-	LogsService, 
-} from '@nest-datum/services';
+	MessagePattern,
+	EventPattern, 
+} from '@nestjs/microservices';
+import { BalancerService } from 'nest-datum/balancer/src';
+import * as Validators from 'nest-datum/validators/src';
 import { ReportService } from './report.service';
 
 @Controller()
 export class ReportController {
 	constructor(
-		private readonly registryService: RegistryService,
-		private readonly logsService: LogsService,
 		private readonly reportService: ReportService,
+		private readonly balancerService: BalancerService,
 	) {
 	}
 
@@ -22,12 +21,8 @@ export class ReportController {
 		try {
 			const many = await this.reportService.many({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_REPORT_MANY'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				relations: Validators.obj('relations', payload['relations']),
 				select: Validators.obj('select', payload['select']),
@@ -47,7 +42,7 @@ export class ReportController {
 				}),
 			});
 
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return {
 				total: many[1],
@@ -55,8 +50,8 @@ export class ReportController {
 			};
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}
@@ -67,12 +62,8 @@ export class ReportController {
 		try {
 			const output = await this.reportService.one({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_REPORT_ONE'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				relations: Validators.obj('relations', payload['relations']),
 				select: Validators.obj('select', payload['select']),
@@ -81,86 +72,74 @@ export class ReportController {
 				}),
 			});
 
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return output;
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}
 	}
 
-	@MessagePattern({ cmd: 'report.drop' })
+	@EventPattern('report.drop')
 	async drop(payload) {
 		try {
 			await this.reportService.drop({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_REPORT_DROP'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				id: Validators.id('id', payload['id'], {
 					isRequired: true,
 				}),
 			});
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return true;
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}
 	}
 
-	@MessagePattern({ cmd: 'report.dropMany' })
+	@EventPattern('report.dropMany')
 	async dropMany(payload) {
 		try {
 			await this.reportService.dropMany({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_REPORT_DROP_MANY'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				ids: Validators.arr('ids', payload['ids'], {
 					isRequired: true,
 					min: 1,
 				}),
 			});
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return true;
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}
 	}
 
-	@MessagePattern({ cmd: 'report.create' })
+	@EventPattern('report.create')
 	async create(payload) {
 		try {
 			const output = await this.reportService.create({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_REPORT_CREATE'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				id: Validators.id('id', payload['id']),
 				userId: Validators.id('userId', payload['userId']),
@@ -179,29 +158,25 @@ export class ReportController {
 				}),
 			});
 
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return output;
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}
 	}
 
-	@MessagePattern({ cmd: 'report.update' })
+	@EventPattern('report.update')
 	async update(payload) {
 		try {
 			await this.reportService.update({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_REPORT_UPDATE'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				id: Validators.id('id', payload['id']),
 				newId: Validators.id('newId', payload['newId']),
@@ -216,13 +191,13 @@ export class ReportController {
 					max: 999,
 				}),
 			});
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return true;
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}

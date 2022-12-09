@@ -5,8 +5,10 @@ import { Letter } from '../letter/letter.entity';
 
 @Module({
 	imports: [
-		TypeOrmModule.forFeature([ LetterLetterOption ]),
-		TypeOrmModule.forFeature([ Letter ]),
+		TypeOrmModule.forFeature([ 
+			LetterLetterOption,
+			Letter, 
+		]),
 	],
 })
 export class LetterLetterLetterOptionModule {

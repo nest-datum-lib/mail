@@ -4,7 +4,7 @@ import {
 	Injectable,
 	Logger,
 } from '@nestjs/common';
-import { CacheService } from '@nest-datum/services';
+import { CacheService } from 'nest-datum/cache/src';
 import { TemplateStatusSeeder } from './template-status.seeder';
 import { TemplateOptionSeeder } from './template-option.seeder';
 import { TemplateTemplateOptionSeeder } from './template-template-option.seeder';
@@ -45,18 +45,18 @@ export class SeedService {
 
 	async send() {
 		try {
-			await this.cacheService.clear('templateStatus.many');
-			await this.cacheService.clear('templateStatus.one');
-			await this.cacheService.clear('templateOption.many');
-			await this.cacheService.clear('templateOption.one');
-			await this.cacheService.clear('template.many');
-			await this.cacheService.clear('template.one');
-			await this.cacheService.clear('letterStatus.many');
-			await this.cacheService.clear('letterStatus.one');
-			await this.cacheService.clear('letter.many');
-			await this.cacheService.clear('letter.one');
-			await this.cacheService.clear('setting.many');
-			await this.cacheService.clear('setting.one');
+			await this.cacheService.clear([ 'template', 'status', 'many' ]);
+			await this.cacheService.clear([ 'template', 'status', 'one' ]);
+			await this.cacheService.clear([ 'template', 'option', 'many' ]);
+			await this.cacheService.clear([ 'template', 'option', 'one' ]);
+			await this.cacheService.clear([ 'template', 'many' ]);
+			await this.cacheService.clear([ 'template', 'one' ]);
+			await this.cacheService.clear([ 'letter', 'status', 'many' ]);
+			await this.cacheService.clear([ 'letter', 'status', 'one' ]);
+			await this.cacheService.clear([ 'letter', 'many' ]);
+			await this.cacheService.clear([ 'letter', 'one' ]);
+			await this.cacheService.clear([ 'setting', 'many' ]);
+			await this.cacheService.clear([ 'setting', 'one' ]);
 
 			await Bluebird.each(this.seeders, async (seeder) => {
 				this.logger.log(`Seeding ${seeder.constructor.name}`);

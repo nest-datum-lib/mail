@@ -1,19 +1,18 @@
 import getCurrentLine from 'get-current-line';
-import * as Validators from '@nest-datum/validators';
 import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
 import { 
-	RegistryService,
-	LogsService, 
-} from '@nest-datum/services';
+	MessagePattern,
+	EventPattern, 
+} from '@nestjs/microservices';
+import { BalancerService } from 'nest-datum/balancer/src';
+import * as Validators from 'nest-datum/validators/src';
 import { TemplateService } from './template.service';
 
 @Controller()
 export class TemplateController {
 	constructor(
-		private readonly registryService: RegistryService,
-		private readonly logsService: LogsService,
 		private readonly templateService: TemplateService,
+		private readonly balancerService: BalancerService,
 	) {
 	}
 
@@ -22,12 +21,8 @@ export class TemplateController {
 		try {
 			const many = await this.templateService.many({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_TEMPLATE_MANY'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				relations: Validators.obj('relations', payload['relations']),
 				select: Validators.obj('select', payload['select']),
@@ -47,7 +42,7 @@ export class TemplateController {
 				}),
 			});
 
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return {
 				total: many[1],
@@ -55,8 +50,8 @@ export class TemplateController {
 			};
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}
@@ -67,12 +62,8 @@ export class TemplateController {
 		try {
 			const output = await this.templateService.one({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_TEMPLATE_ONE'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				relations: Validators.obj('relations', payload['relations']),
 				select: Validators.obj('select', payload['select']),
@@ -81,114 +72,98 @@ export class TemplateController {
 				}),
 			});
 
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return output;
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}
 	}
 
-	@MessagePattern({ cmd: 'template.drop' })
+	@EventPattern('template.drop')
 	async drop(payload) {
 		try {
 			await this.templateService.drop({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_TEMPLATE_DROP'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				id: Validators.id('id', payload['id'], {
 					isRequired: true,
 				}),
 			});
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return true;
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}
 	}
 
-	@MessagePattern({ cmd: 'template.dropMany' })
+	@EventPattern('template.dropMany')
 	async dropMany(payload) {
 		try {
 			await this.templateService.dropMany({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_TEMPLATE_DROP_MANY'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				ids: Validators.arr('ids', payload['ids'], {
 					isRequired: true,
 					min: 1,
 				}),
 			});
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return true;
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}
 	}
 
-	@MessagePattern({ cmd: 'template.dropOption' })
+	@EventPattern('template.dropOption')
 	async dropOption(payload) {
 		try {
 			await this.templateService.dropOption({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_TEMPLATE_DROP_OPTION'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				id: Validators.id('id', payload['id'], {
 					isRequired: true,
 				}),
 			});
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return true;
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}
 	}
 
-	@MessagePattern({ cmd: 'template.create' })
+	@EventPattern('template.create')
 	async create(payload) {
 		try {
 			const output = await this.templateService.create({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_TEMPLATE_CREATE'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				id: Validators.id('id', payload['id']),
 				userId: Validators.id('userId', payload['userId']),
@@ -215,29 +190,25 @@ export class TemplateController {
 				isNotDelete: Validators.bool('isNotDelete', payload['isNotDelete']),
 			});
 
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return output;
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}
 	}
 
-	@MessagePattern({ cmd: 'template.createOption' })
+	@EventPattern('template.createOption')
 	async createOption(payload) {
 		try {
 			const output = await this.templateService.createOption({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_TEMPLATE_CREATE_OPTION'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				id: Validators.id('id', payload['id']),
 				optionId: Validators.id('optionId', payload['optionId'], {
@@ -246,29 +217,25 @@ export class TemplateController {
 				data: Validators.arr('data', payload['data']) || {},
 			});
 
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return output;
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}
 	}
 
-	@MessagePattern({ cmd: 'template.createOptions' })
+	@EventPattern('template.createOptions')
 	async createOptions(payload) {
 		try {
 			const output = await this.templateService.createOptions({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_TEMPLATE_CREATE_OPTIONS'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				id: Validators.id('id', payload['id']),
 				data: Validators.arr('data', payload['data'], {
@@ -276,29 +243,25 @@ export class TemplateController {
 				}),
 			});
 
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return output;
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}
 	}
 
-	@MessagePattern({ cmd: 'template.update' })
+	@EventPattern('template.update')
 	async update(payload) {
 		try {
 			await this.templateService.update({
 				user: Validators.token('accessToken', payload['accessToken'], {
-					secret: process.env.JWT_SECRET_ACCESS_KEY,
-					timeout: process.env.JWT_ACCESS_TIMEOUT,
+					accesses: [ process['ACCESS_MAIL_TEMPLATE_UPDATE'] ],
 					isRequired: true,
-					role: {
-						name: [ 'Admin' ],
-					},
 				}),
 				id: Validators.id('id', payload['id']),
 				newId: Validators.id('newId', payload['newId']),
@@ -318,13 +281,13 @@ export class TemplateController {
 				isDeleted: Validators.bool('isDeleted', payload['isDeleted']),
 				createdAt: Validators.date('createdAt', payload['createdAt']),
 			});
-			await this.registryService.clearResources();
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return true;
 		}
 		catch (err) {
-			this.logsService.emit(err);
-			this.registryService.clearResources();
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
 
 			return err;
 		}

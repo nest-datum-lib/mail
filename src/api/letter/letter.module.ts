@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { 
-	RegistryService,
-	LogsService,
-	CacheService, 
-} from '@nest-datum/services';
+	BalancerRepository,
+	BalancerService, 
+} from 'nest-datum/balancer/src';
+import { CacheService } from 'nest-datum/cache/src';
 import { Template } from '../template/template.entity';
 import { LetterStatus } from '../letter-status/letter-status.entity';
 import { LetterLetterLetterOption } from '../letter-letter-letter-option/letter-letter-letter-option.entity';
@@ -25,8 +25,8 @@ import { LetterController } from './letter.controller';
 		]),
 	],
 	providers: [
-		RegistryService, 
-		LogsService,
+		BalancerRepository, 
+		BalancerService,
 		CacheService,
 		LetterService, 
 	],

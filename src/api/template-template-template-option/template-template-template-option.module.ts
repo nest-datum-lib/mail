@@ -5,8 +5,10 @@ import { Template } from '../template/template.entity';
 
 @Module({
 	imports: [
-		TypeOrmModule.forFeature([ TemplateTemplateOption ]),
-		TypeOrmModule.forFeature([ Template ]),
+		TypeOrmModule.forFeature([ 
+			TemplateTemplateOption,
+			Template, 
+		]),
 	],
 })
 export class TemplateTemplateTemplateOptionModule {

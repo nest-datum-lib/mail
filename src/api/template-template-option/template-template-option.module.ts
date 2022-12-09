@@ -6,9 +6,11 @@ import { Template } from '../template/template.entity';
 
 @Module({
 	imports: [
-		TypeOrmModule.forFeature([ TemplateTemplateTemplateOption ]),
-		TypeOrmModule.forFeature([ TemplateOption ]),
-		TypeOrmModule.forFeature([ Template ]),
+		TypeOrmModule.forFeature([ 
+			TemplateTemplateTemplateOption,
+			TemplateOption, 
+			Template,
+		]),
 	],
 })
 export class TemplateTemplateOptionModule {

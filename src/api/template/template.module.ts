@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { 
-	RegistryService,
-	LogsService,
-	CacheService, 
-} from '@nest-datum/services';
+	BalancerRepository,
+	BalancerService, 
+} from 'nest-datum/balancer/src';
 import { Letter } from '../letter/letter.entity';
 import { TemplateStatus } from '../template-status/template-status.entity';
 import { TemplateTemplateTemplateOption } from '../template-template-template-option/template-template-template-option.entity';
@@ -25,8 +24,8 @@ import { TemplateController } from './template.controller';
 		]),
 	],
 	providers: [
-		RegistryService, 
-		LogsService,
+		BalancerRepository, 
+		BalancerService,
 		CacheService,
 		TemplateService, 
 	],
