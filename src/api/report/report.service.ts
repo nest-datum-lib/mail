@@ -88,8 +88,8 @@ export class ReportService extends SqlService {
 
 	async drop({ user, ...payload }): Promise<any> {
 		try {
-			await this.cacheService.clear([ 'report', 'many' ]);
-			await this.cacheService.clear([ 'report', 'one', payload ]);
+			this.cacheService.clear([ 'report', 'many' ]);
+			this.cacheService.clear([ 'report', 'one', payload ]);
 
 			await this.dropByIsDeleted(this.reportRepository, payload['id']);
 
@@ -105,8 +105,9 @@ export class ReportService extends SqlService {
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'report', 'many' ]);
-			await this.cacheService.clear([ 'report', 'one', payload ]);
+			
+			this.cacheService.clear([ 'report', 'many' ]);
+			this.cacheService.clear([ 'report', 'one', payload ]);
 
 			let i = 0;
 
@@ -134,7 +135,8 @@ export class ReportService extends SqlService {
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'report', 'many' ]);
+			
+			this.cacheService.clear([ 'report', 'many' ]);
 
 			const output = await this.reportRepository.save({
 				...payload,
@@ -161,8 +163,9 @@ export class ReportService extends SqlService {
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'report', 'many' ]);
-			await this.cacheService.clear([ 'report', 'one' ]);
+			
+			this.cacheService.clear([ 'report', 'many' ]);
+			this.cacheService.clear([ 'report', 'one' ]);
 			
 			await this.updateWithId(this.reportRepository, payload);
 			

@@ -99,8 +99,9 @@ export class LetterOptionService extends SqlService {
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'letter', 'option', 'many' ]);
-			await this.cacheService.clear([ 'letter', 'option', 'one', payload ]);
+			
+			this.cacheService.clear([ 'letter', 'option', 'many' ]);
+			this.cacheService.clear([ 'letter', 'option', 'one', payload ]);
 
 			await this.letterLetterOptionRepository.delete({ letterOptionId: payload['id'] });
 			await this.dropByIsDeleted(this.LetterOptionRepository, payload['id']);
@@ -125,8 +126,9 @@ export class LetterOptionService extends SqlService {
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'letter', 'option', 'many' ]);
-			await this.cacheService.clear([ 'letter', 'option', 'one', payload ]);
+			
+			this.cacheService.clear([ 'letter', 'option', 'many' ]);
+			this.cacheService.clear([ 'letter', 'option', 'one', payload ]);
 
 			let i = 0;
 
@@ -155,7 +157,8 @@ export class LetterOptionService extends SqlService {
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'letter', 'option', 'many' ]);
+			
+			this.cacheService.clear([ 'letter', 'option', 'many' ]);
 
 			const output = await this.LetterOptionRepository.save({
 				...payload,
@@ -182,8 +185,9 @@ export class LetterOptionService extends SqlService {
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'letter', 'option', 'many' ]);
-			await this.cacheService.clear([ 'letter', 'option', 'one' ]);
+			
+			this.cacheService.clear([ 'letter', 'option', 'many' ]);
+			this.cacheService.clear([ 'letter', 'option', 'one' ]);
 			
 			await this.updateWithId(this.LetterOptionRepository, payload);
 			

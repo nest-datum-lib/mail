@@ -103,8 +103,9 @@ export class LetterService extends SqlService {
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'letter', 'many' ]);
-			await this.cacheService.clear([ 'letter', 'one', payload ]);
+			
+			this.cacheService.clear([ 'letter', 'many' ]);
+			this.cacheService.clear([ 'letter', 'one', payload ]);
 
 			await this.letterLetterLetterOptionRepository.delete({ letterId: payload['id'] });
 			await this.letterLetterOptionRepository.delete({ letterId: payload['id'] });
@@ -130,8 +131,9 @@ export class LetterService extends SqlService {
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'letter', 'many' ]);
-			await this.cacheService.clear([ 'letter', 'one', payload ]);
+			
+			this.cacheService.clear([ 'letter', 'many' ]);
+			this.cacheService.clear([ 'letter', 'one', payload ]);
 
 			let i = 0;
 
@@ -161,7 +163,8 @@ export class LetterService extends SqlService {
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'letter', 'many' ]);
+			
+			this.cacheService.clear([ 'letter', 'many' ]);
 
 			const output = await this.letterRepository.save({
 				...payload,
@@ -183,13 +186,69 @@ export class LetterService extends SqlService {
 		}
 	}
 
+	async createOptions({ user, id, data }): Promise<any> {
+		const queryRunner = await this.connection.createQueryRunner();
+
+		try {
+			await queryRunner.startTransaction();
+			
+			this.cacheService.clear([ 'letter', 'option', 'many' ]);
+			this.cacheService.clear([ 'letter', 'many' ]);
+			this.cacheService.clear([ 'letter', 'one' ]);
+
+			await this.letterLetterLetterOptionRepository.delete({
+				letterId: id,
+			});
+
+			let i = 0,
+				ii = 0;
+
+			while (i < data.length) {
+				ii = 0;
+
+				const option = data[i];
+
+				while (ii < option.length) {
+					const {
+						entityOptionId,
+						entityId,
+						id: itemId,
+						...optionData
+					} = option[ii];
+
+					const output = await this.letterLetterLetterOptionRepository.save({
+						...optionData,
+						letterId: id,
+						letterLetterOptionId: entityOptionId,
+					});
+
+					ii++;
+				}
+				i++;
+			}
+			await queryRunner.commitTransaction();
+			
+			return true;
+		}
+		catch (err) {
+			await queryRunner.rollbackTransaction();
+			await queryRunner.release();
+
+			throw new ErrorException(err.message, getCurrentLine(), { user, id, data });
+		}
+		finally {
+			await queryRunner.release();
+		}
+	}
+
 	async update({ user, ...payload }): Promise<any> {
 		const queryRunner = await this.connection.createQueryRunner(); 
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'letter', 'many' ]);
-			await this.cacheService.clear([ 'letter', 'one' ]);
+			
+			this.cacheService.clear([ 'letter', 'many' ]);
+			this.cacheService.clear([ 'letter', 'one' ]);
 			
 			await this.updateWithId(this.letterRepository, payload);
 			

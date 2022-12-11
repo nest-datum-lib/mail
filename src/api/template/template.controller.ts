@@ -178,6 +178,32 @@ export class TemplateController {
 		}
 	}
 
+	@EventPattern('template.createOptions')
+	async createOptions(payload) {
+		try {
+			const output = await this.templateService.createOptions({
+				user: Validators.token('accessToken', payload['accessToken'], {
+					accesses: [ process['ACCESS_MAIL_TEMPLATE_CREATE_OPTIONS'] ],
+					isRequired: true,
+				}),
+				id: Validators.id('id', payload['id']),
+				data: Validators.arr('data', payload['data'], {
+					isRequired: true,
+				}),
+			});
+
+			this.balancerService.decrementServiceResponseLoadingIndicator();
+
+			return output;
+		}
+		catch (err) {
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
+
+			return err;
+		}
+	}
+
 	@EventPattern('template.update')
 	async update(payload) {
 		try {

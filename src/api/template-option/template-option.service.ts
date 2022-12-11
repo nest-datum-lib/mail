@@ -99,8 +99,9 @@ export class TemplateOptionService extends SqlService {
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'template', 'option', 'many' ]);
-			await this.cacheService.clear([ 'template', 'option', 'one', payload ]);
+			
+			this.cacheService.clear([ 'template', 'option', 'many' ]);
+			this.cacheService.clear([ 'template', 'option', 'one', payload ]);
 
 			await this.templateTemplateOptionRepository.delete({ templateOptionId: payload['id'] });
 			await this.dropByIsDeleted(this.templateOptionRepository, payload['id']);
@@ -125,8 +126,9 @@ export class TemplateOptionService extends SqlService {
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'template', 'option', 'many' ]);
-			await this.cacheService.clear([ 'template', 'option', 'one', payload ]);
+			
+			this.cacheService.clear([ 'template', 'option', 'many' ]);
+			this.cacheService.clear([ 'template', 'option', 'one', payload ]);
 
 			let i = 0;
 
@@ -155,7 +157,8 @@ export class TemplateOptionService extends SqlService {
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'template', 'option', 'many' ]);
+			
+			this.cacheService.clear([ 'template', 'option', 'many' ]);
 
 			const output = await this.templateOptionRepository.save({
 				...payload,
@@ -182,8 +185,9 @@ export class TemplateOptionService extends SqlService {
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'template', 'option', 'many' ]);
-			await this.cacheService.clear([ 'template', 'option', 'one' ]);
+			
+			this.cacheService.clear([ 'template', 'option', 'many' ]);
+			this.cacheService.clear([ 'template', 'option', 'one' ]);
 			
 			await this.updateWithId(this.templateOptionRepository, payload);
 			

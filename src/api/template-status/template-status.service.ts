@@ -90,8 +90,8 @@ export class TemplateStatusService extends SqlService {
 
 	async drop({ user, ...payload }): Promise<any> {
 		try {
-			await this.cacheService.clear([ 'template', 'status', 'many' ]);
-			await this.cacheService.clear([ 'template', 'status', 'one', payload ]);
+			this.cacheService.clear([ 'template', 'status', 'many' ]);
+			this.cacheService.clear([ 'template', 'status', 'one', payload ]);
 
 			await this.dropByIsDeleted(this.templateStatusRepository, payload['id']);
 			
@@ -107,8 +107,9 @@ export class TemplateStatusService extends SqlService {
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'template', 'status', 'many' ]);
-			await this.cacheService.clear([ 'template', 'status', 'one', payload ]);
+			
+			this.cacheService.clear([ 'template', 'status', 'many' ]);
+			this.cacheService.clear([ 'template', 'status', 'one', payload ]);
 
 			let i = 0;
 
@@ -136,7 +137,8 @@ export class TemplateStatusService extends SqlService {
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'template', 'status', 'many' ]);
+			
+			this.cacheService.clear([ 'template', 'status', 'many' ]);
 
 			const output = await this.templateStatusRepository.save({
 				...payload,
@@ -163,8 +165,9 @@ export class TemplateStatusService extends SqlService {
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'template', 'status', 'many' ]);
-			await this.cacheService.clear([ 'template', 'status', 'one' ]);
+			
+			this.cacheService.clear([ 'template', 'status', 'many' ]);
+			this.cacheService.clear([ 'template', 'status', 'one' ]);
 			
 			await this.updateWithId(this.templateStatusRepository, payload);
 			

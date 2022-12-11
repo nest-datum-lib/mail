@@ -101,8 +101,9 @@ export class TemplateService extends SqlService {
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'template', 'many' ]);
-			await this.cacheService.clear([ 'template', 'one', payload ]);
+			
+			this.cacheService.clear([ 'template', 'many' ]);
+			this.cacheService.clear([ 'template', 'one', payload ]);
 
 			await this.templateTemplateTemplateOptionRepository.delete({ templateId: payload['id'] });
 			await this.templateTemplateOptionRepository.delete({ templateId: payload['id'] });
@@ -128,8 +129,9 @@ export class TemplateService extends SqlService {
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'template', 'many' ]);
-			await this.cacheService.clear([ 'template', 'one', payload ]);
+			
+			this.cacheService.clear([ 'template', 'many' ]);
+			this.cacheService.clear([ 'template', 'one', payload ]);
 
 			let i = 0;
 
@@ -159,7 +161,7 @@ export class TemplateService extends SqlService {
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'template', 'many' ]);
+			this.cacheService.clear([ 'template', 'many' ]);
 
 			const output = await this.templateRepository.save({
 				...payload,
@@ -181,13 +183,69 @@ export class TemplateService extends SqlService {
 		}
 	}
 
+	async createOptions({ user, id, data }): Promise<any> {
+		const queryRunner = await this.connection.createQueryRunner();
+
+		try {
+			await queryRunner.startTransaction();
+			
+			this.cacheService.clear([ 'template', 'option', 'many' ]);
+			this.cacheService.clear([ 'template', 'many' ]);
+			this.cacheService.clear([ 'template', 'one' ]);
+
+			await this.templateTemplateTemplateOptionRepository.delete({
+				templateId: id,
+			});
+
+			let i = 0,
+				ii = 0;
+
+			while (i < data.length) {
+				ii = 0;
+
+				const option = data[i];
+
+				while (ii < option.length) {
+					const {
+						entityOptionId,
+						entityId,
+						id: itemId,
+						...optionData
+					} = option[ii];
+
+					const output = await this.templateTemplateTemplateOptionRepository.save({
+						...optionData,
+						templateId: id,
+						templateTemplateOptionId: entityOptionId,
+					});
+
+					ii++;
+				}
+				i++;
+			}
+			await queryRunner.commitTransaction();
+			
+			return true;
+		}
+		catch (err) {
+			await queryRunner.rollbackTransaction();
+			await queryRunner.release();
+
+			throw new ErrorException(err.message, getCurrentLine(), { user, id, data });
+		}
+		finally {
+			await queryRunner.release();
+		}
+	}
+
 	async update({ user, ...payload }): Promise<any> {
 		const queryRunner = await this.connection.createQueryRunner(); 
 
 		try {
 			await queryRunner.startTransaction();
-			await this.cacheService.clear([ 'template', 'many' ]);
-			await this.cacheService.clear([ 'template', 'one' ]);
+			
+			this.cacheService.clear([ 'template', 'many' ]);
+			this.cacheService.clear([ 'template', 'one' ]);
 			
 			await this.updateWithId(this.templateRepository, payload);
 			

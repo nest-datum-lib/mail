@@ -183,6 +183,32 @@ export class LetterController {
 		}
 	}
 
+	@EventPattern('letter.createOptions')
+	async createOptions(payload) {
+		try {
+			const output = await this.letterService.createOptions({
+				user: Validators.token('accessToken', payload['accessToken'], {
+					accesses: [ process['ACCESS_MAIL_LETTER_CREATE_OPTIONS'] ],
+					isRequired: true,
+				}),
+				id: Validators.id('id', payload['id']),
+				data: Validators.arr('data', payload['data'], {
+					isRequired: true,
+				}),
+			});
+
+			this.balancerService.decrementServiceResponseLoadingIndicator();
+
+			return output;
+		}
+		catch (err) {
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
+
+			return err;
+		}
+	}
+
 	@EventPattern('letter.update')
 	async update(payload) {
 		try {
