@@ -6,7 +6,7 @@ import {
 	UpdateDateColumn,
 	ManyToOne,
 } from 'typeorm';
-import { LetterStatus } from '../letter-status/letter-status.entity';
+import { ReportStatus } from '../report-status/report-status.entity';
 
 @Entity()
 export class Report {
@@ -17,10 +17,10 @@ export class Report {
 	public userId: string;
 
 	@Column({ default: '' })
-	public letterStatusId: string;
+	public reportStatusId: string;
 
-	@ManyToOne(() => LetterStatus, (letterStatus) => letterStatus.reports)
-	public letterStatus: LetterStatus;
+	@ManyToOne(() => ReportStatus, (reportStatus) => reportStatus.reports)
+	public reportStatus: LetterStatus;
 
 	@Column()
 	public action: string;

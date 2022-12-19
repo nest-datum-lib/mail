@@ -107,9 +107,10 @@ export class LetterService extends SqlService {
 			this.cacheService.clear([ 'letter', 'many' ]);
 			this.cacheService.clear([ 'letter', 'one', payload ]);
 
-			await this.letterLetterLetterOptionRepository.delete({ letterId: payload['id'] });
-			await this.letterLetterOptionRepository.delete({ letterId: payload['id'] });
-			await this.dropByIsDeleted(this.letterRepository, payload['id']);
+			await this.dropByIsDeleted(this.letterRepository, payload['id'], async (entity) => {
+				await this.letterLetterLetterOptionRepository.delete({ letterId: entity['id'] });
+				await this.letterLetterOptionRepository.delete({ letterId: entity['id'] });
+			});
 
 			await queryRunner.commitTransaction();
 
@@ -138,9 +139,10 @@ export class LetterService extends SqlService {
 			let i = 0;
 
 			while (i < payload['ids'].length) {
-				await this.letterLetterLetterOptionRepository.delete({ letterId: payload['ids'][i] });
-				await this.letterLetterOptionRepository.delete({ letterId: payload['ids'][i] });
-				await this.dropByIsDeleted(this.letterRepository, payload['ids'][i]);
+				await this.dropByIsDeleted(this.letterRepository, payload['ids'][i], async (entity) => {
+					await this.letterLetterLetterOptionRepository.delete({ letterId: entity['id'] });
+					await this.letterLetterOptionRepository.delete({ letterId: entity['id'] });
+				});
 				i++;
 			}
 			await queryRunner.commitTransaction();

@@ -16,6 +16,7 @@ import { LetterOptionModule } from './api/letter-option/letter-option.module';
 import { LetterLetterOptionModule } from './api/letter-letter-option/letter-letter-option.module';
 import { LetterLetterLetterOptionModule } from './api/letter-letter-letter-option/letter-letter-letter-option.module';
 import { LetterModule } from './api/letter/letter.module';
+import { ReportStatusModule } from './api/report-status/report-status.module';
 import { ReportModule } from './api/report/report.module';
 import { SettingModule } from './api/setting/setting.module';
 
@@ -25,6 +26,7 @@ import { SettingModule } from './api/setting/setting.module';
 		RedisModule.forRoot(redisConfig),
 		BalancerModule,
 		SettingModule,
+		ReportStatusModule,
 		ReportModule,
 		TemplateStatusModule,
 		TemplateOptionModule,

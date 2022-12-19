@@ -5,26 +5,25 @@ import {
 	BalancerService, 
 } from 'nest-datum/balancer/src';
 import { CacheService } from 'nest-datum/cache/src';
-import { ReportStatus } from '../report-status/report-status.entity';
-import { Report } from './report.entity';
-import { ReportService } from './report.service';
-import { ReportController } from './report.controller';
+import { Report } from '../report/report.entity';
+import { ReportStatus } from './report-status.entity';
+import { ReportStatusService } from './report-status.service';
+import { ReportStatusController } from './report-status.controller';
 
 @Module({
-	controllers: [ ReportController ],
+	controllers: [ ReportStatusController ],
 	imports: [
 		TypeOrmModule.forFeature([ 
-			ReportStatus,
-			Report, 
+			Report,
+			ReportStatus, 
 		]),
 	],
 	providers: [
 		BalancerRepository, 
 		BalancerService,
 		CacheService,
-		ReportService, 
+		ReportStatusService, 
 	],
 })
-export class ReportModule {
+export class ReportStatusModule {
 }
-

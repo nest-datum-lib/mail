@@ -103,8 +103,9 @@ export class LetterOptionService extends SqlService {
 			this.cacheService.clear([ 'letter', 'option', 'many' ]);
 			this.cacheService.clear([ 'letter', 'option', 'one', payload ]);
 
-			await this.letterLetterOptionRepository.delete({ letterOptionId: payload['id'] });
-			await this.dropByIsDeleted(this.LetterOptionRepository, payload['id']);
+			await this.dropByIsDeleted(this.LetterOptionRepository, payload['id'], async (entity) => {
+				await this.letterLetterOptionRepository.delete({ letterOptionId: entity['id'] });
+			});
 
 			await queryRunner.commitTransaction();
 
@@ -133,8 +134,9 @@ export class LetterOptionService extends SqlService {
 			let i = 0;
 
 			while (i < payload['ids'].length) {
-				await this.letterLetterOptionRepository.delete({ letterOptionId: payload['ids'][i] });
-				await this.dropByIsDeleted(this.LetterOptionRepository, payload['ids'][i]);
+				await this.dropByIsDeleted(this.LetterOptionRepository, payload['ids'][i], async (entity) => {
+					await this.letterLetterOptionRepository.delete({ letterOptionId: entity['id'] });
+				});
 				i++;
 			}
 			await queryRunner.commitTransaction();

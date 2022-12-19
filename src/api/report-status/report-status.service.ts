@@ -17,14 +17,12 @@ import {
 	ErrorException,
 	NotFoundException, 
 } from 'nest-datum/exceptions/src';
-import { TemplateOption } from './template-option.entity';
-import { TemplateTemplateOption } from '../template-template-option/template-template-option.entity';
+import { ReportStatus } from './report-status.entity';
 
 @Injectable()
-export class TemplateOptionService extends SqlService {
+export class ReportStatusService extends SqlService {
 	constructor(
-		@InjectRepository(TemplateOption) private readonly templateOptionRepository: Repository<TemplateOption>,
-		@InjectRepository(TemplateTemplateOption) private readonly templateTemplateOptionRepository: Repository<TemplateTemplateOption>,
+		@InjectRepository(ReportStatus) private readonly reportStatusRepository: Repository<ReportStatus>,
 		private readonly connection: Connection,
 		private readonly cacheService: CacheService,
 	) {
@@ -33,14 +31,11 @@ export class TemplateOptionService extends SqlService {
 
 	protected selectDefaultMany = {
 		id: true,
+		userId: true,
 		name: true,
 		description: true,
-		dataTypeId: true,
-		defaultValue: true,
-		regex: true,
-		isMultiline: true,
-		isRequired: true,
 		isDeleted: true,
+		isNotDelete: true,
 		createdAt: true,
 		updatedAt: true,
 	};
@@ -49,40 +44,39 @@ export class TemplateOptionService extends SqlService {
 		id: true,
 		name: true,
 		description: true,
-		defaultValue: true,
-		regex: true,
 	};
 
 	async many({ user, ...payload }): Promise<any> {
 		try {
-			const cachedData = await this.cacheService.get([ 'template', 'option', 'many', payload ]);
+			const cachedData = await this.cacheService.get([ 'report', 'status', 'many', payload ]);
 
 			if (cachedData) {
 				return cachedData;
 			}
-			const output = await this.templateOptionRepository.findAndCount(await this.findMany(payload));
+			const output = await this.reportStatusRepository.findAndCount(await this.findMany(payload));
 
-			await this.cacheService.set([ 'template', 'option', 'many', payload ], output);
+			await this.cacheService.set([ 'report', 'status', 'many', payload ], output);
 			
 			return output;
 		}
 		catch (err) {
 			throw new ErrorException(err.message, getCurrentLine(), { user, ...payload });
 		}
+
 		return [ [], 0 ];
 	}
 
 	async one({ user, ...payload }): Promise<any> {
 		try {
-			const cachedData = await this.cacheService.get([ 'template', 'option', 'one', payload ]);
+			const cachedData = await this.cacheService.get([ 'report', 'status', 'one', payload ]);
 
 			if (cachedData) {
 				return cachedData;
 			}
-			const output = await this.templateOptionRepository.findOne(await this.findOne(payload));
-		
+			const output = await this.reportStatusRepository.findOne(await this.findOne(payload));
+
 			if (output) {
-				await this.cacheService.set([ 'template', 'option', 'one', payload ], output);
+				await this.cacheService.set([ 'report', 'status', 'one', payload ], output);
 			}
 			if (!output) {
 				return new NotFoundException('Entity is undefined', getCurrentLine(), { user, ...payload });
@@ -95,30 +89,16 @@ export class TemplateOptionService extends SqlService {
 	}
 
 	async drop({ user, ...payload }): Promise<any> {
-		const queryRunner = await this.connection.createQueryRunner(); 
-
 		try {
-			await queryRunner.startTransaction();
+			this.cacheService.clear([ 'report', 'status', 'many' ]);
+			this.cacheService.clear([ 'report', 'status', 'one', payload ]);
+
+			await this.dropByIsDeleted(this.reportStatusRepository, payload['id']);
 			
-			this.cacheService.clear([ 'template', 'option', 'many' ]);
-			this.cacheService.clear([ 'template', 'option', 'one', payload ]);
-
-			await this.dropByIsDeleted(this.templateOptionRepository, payload['id'], async (entity) => {
-				await this.templateTemplateOptionRepository.delete({ templateOptionId: entity['id'] });
-			});
-
-			await queryRunner.commitTransaction();
-
 			return true;
 		}
 		catch (err) {
-			await queryRunner.rollbackTransaction();
-			await queryRunner.release();
-
 			throw new ErrorException(err.message, getCurrentLine(), { user, ...payload });
-		}
-		finally {
-			await queryRunner.release();
 		}
 	}
 
@@ -128,15 +108,13 @@ export class TemplateOptionService extends SqlService {
 		try {
 			await queryRunner.startTransaction();
 			
-			this.cacheService.clear([ 'template', 'option', 'many' ]);
-			this.cacheService.clear([ 'template', 'option', 'one', payload ]);
+			this.cacheService.clear([ 'report', 'status', 'many' ]);
+			this.cacheService.clear([ 'report', 'status', 'one', payload ]);
 
 			let i = 0;
 
 			while (i < payload['ids'].length) {
-				await this.dropByIsDeleted(this.templateOptionRepository, payload['ids'][i], async (entity) => {
-					await this.templateTemplateOptionRepository.delete({ templateOptionId: entity['id'] });
-				});
+				await this.dropByIsDeleted(this.reportStatusRepository, payload['ids'][i]);
 				i++;
 			}
 			await queryRunner.commitTransaction();
@@ -160,9 +138,9 @@ export class TemplateOptionService extends SqlService {
 		try {
 			await queryRunner.startTransaction();
 			
-			this.cacheService.clear([ 'template', 'option', 'many' ]);
+			this.cacheService.clear([ 'report', 'status', 'many' ]);
 
-			const output = await this.templateOptionRepository.save({
+			const output = await this.reportStatusRepository.save({
 				...payload,
 				userId: payload['userId'] || user['id'] || '',
 			});
@@ -188,10 +166,10 @@ export class TemplateOptionService extends SqlService {
 		try {
 			await queryRunner.startTransaction();
 			
-			this.cacheService.clear([ 'template', 'option', 'many' ]);
-			this.cacheService.clear([ 'template', 'option', 'one' ]);
+			this.cacheService.clear([ 'report', 'status', 'many' ]);
+			this.cacheService.clear([ 'report', 'status', 'one' ]);
 			
-			await this.updateWithId(this.templateOptionRepository, payload);
+			await this.updateWithId(this.reportStatusRepository, payload);
 			
 			await queryRunner.commitTransaction();
 			

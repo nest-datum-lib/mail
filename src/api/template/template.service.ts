@@ -105,9 +105,10 @@ export class TemplateService extends SqlService {
 			this.cacheService.clear([ 'template', 'many' ]);
 			this.cacheService.clear([ 'template', 'one', payload ]);
 
-			await this.templateTemplateTemplateOptionRepository.delete({ templateId: payload['id'] });
-			await this.templateTemplateOptionRepository.delete({ templateId: payload['id'] });
-			await this.dropByIsDeleted(this.templateRepository, payload['id']);
+			await this.dropByIsDeleted(this.templateRepository, payload['id'], async (entity) => {
+				await this.templateTemplateTemplateOptionRepository.delete({ templateId: entity['id'] });
+				await this.templateTemplateOptionRepository.delete({ templateId: entity['id'] });
+			});
 
 			await queryRunner.commitTransaction();
 
@@ -136,9 +137,10 @@ export class TemplateService extends SqlService {
 			let i = 0;
 
 			while (i < payload['ids'].length) {
-				await this.templateTemplateTemplateOptionRepository.delete({ templateId: payload['ids'][i] });
-				await this.templateTemplateOptionRepository.delete({ templateId: payload['ids'][i] });
-				await this.dropByIsDeleted(this.templateRepository, payload['ids'][i]);
+				await this.dropByIsDeleted(this.templateRepository, payload['ids'][i], async (entity) => {
+					await this.templateTemplateTemplateOptionRepository.delete({ templateId: entity['id'] });
+					await this.templateTemplateOptionRepository.delete({ templateId: entity['id'] });
+				});
 				i++;
 			}
 			await queryRunner.commitTransaction();

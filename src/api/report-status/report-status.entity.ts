@@ -6,10 +6,10 @@ import {
 	UpdateDateColumn,
 	OneToMany,
 } from 'typeorm';
-import { Letter } from '../letter/letter.entity';
+import { Report } from '../report/report.entity';
 
 @Entity()
-export class LetterStatus {
+export class ReportStatus {
 	@PrimaryGeneratedColumn('uuid')
 	public id: string;
 
@@ -43,6 +43,6 @@ export class LetterStatus {
 	})
 	public updatedAt: Date;
 
-	@OneToMany(() => Letter, (letter) => letter.letterStatus)
-	public letters: Letter[];
+	@OneToMany(() => Report, (report) => report.reportStatus)
+	public reports: Report[];
 }

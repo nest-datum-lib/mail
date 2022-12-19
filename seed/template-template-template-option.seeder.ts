@@ -24,11 +24,11 @@ export class TemplateTemplateTemplateOptionSeeder {
 			await Bluebird.each([{
 				templateId: 'mail-template-register',
 				templateTemplateOptionId: 'mail-t-t-option-register',
-				content: '/views',
+				content: '{"src":"/views","systemId":"files-system-page-view"}',
 			}, {
 				templateId: 'mail-template-recovery',
 				templateTemplateOptionId: 'mail-t-t-option-recovery',
-				content: '/views',
+				content: '{"src":"/views","systemId":"files-system-page-view"}',
 			}], async (data) => {
 				try {
 					await this.templateTemplateTemplateOptionRepository.insert(data);
