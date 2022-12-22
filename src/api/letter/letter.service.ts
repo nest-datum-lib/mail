@@ -268,4 +268,82 @@ export class LetterService extends SqlService {
 			await queryRunner.release();
 		}
 	}
+
+	async send({ user, ...payload }): Promise<any> {
+		// const queryRunner = await this.connection.createQueryRunner(); 
+
+		try {
+			// await queryRunner.startTransaction();
+			
+			this.cacheService.clear([ 'letter', 'send' ]);
+
+			const letter = await this.letterRepository.findOne({
+				where: {
+					id: payload['letterId'],
+				},
+			});
+			const letterOptionContent = await this.letterLetterLetterOptionRepository.find({
+				where: {
+					letterId: payload['letterId'],
+				},
+				relations: {
+					letterLetterOption: {
+						letterOption: true,
+					},
+				},
+			});
+			const template = await this.templateRepository.findOne({
+				where: {
+					id: letter['templateId'],
+				},
+			});
+
+			console.log('letter', letter);
+			console.log('letterOptionContent', letterOptionContent);
+			console.log('template', template);
+
+			/*const mailjetConnection = mailjet.connect(process.env.MAILJET_API_KEY, process.env.MAILJET_API_SECRET);
+			const mailjetRequest = mailjetConnection
+				.post('send', {
+					'version': 'v3.1'
+				})
+				.request({
+					'Messages': [{
+						'From': {
+							'Email': process.env.MAILJET_EMAIL,
+							'Name': process.env.MAILJET_NAME,
+						},
+						'To': [{
+							'Email': payload['email'],
+							'Name': payload['login'],
+						}],
+						'Subject': `Confirmation account on Revenue Media`,
+						'TextPart': `Confirmation account on Revenue Media`,
+						'HTMLPart': `<div>
+							<h3>Completion of registration</h3>
+							<p>To activate your account follow the link: <a href="${process.env.FRONT_URL}/recovery/verify?key=${verifyKey}">${process.env.FRONT_URL}/recovery/verify?key=${verifyKey}</a></p>
+						</div>`,
+						'CustomID': 'AppGettingStartedTest',
+					}],
+			});
+
+			const output = await this.letterRepository.save({
+				...payload,
+				userId: payload['userId'] || user['id'] || '',
+			});
+
+			await queryRunner.commitTransaction();*/
+
+			return output;
+		}
+		catch (err) {
+			// await queryRunner.rollbackTransaction();
+			// await queryRunner.release();
+
+			throw new ErrorException(err.message, getCurrentLine(), { user, ...payload });
+		}
+		finally {
+			// await queryRunner.release();
+		}
+	}
 }

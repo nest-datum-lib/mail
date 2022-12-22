@@ -133,6 +133,36 @@ export class LetterController {
 		}
 	}
 
+	@EventPattern('letter.send')
+	async send(payload) {
+		try {
+			const output = await this.letterService.send({
+				user: Validators.token('accessToken', payload['accessToken'], {
+					accesses: [ process['ACCESS_MAIL_LETTER_CREATE'] ],
+					isRequired: true,
+				}),
+				userId: Validators.id('userId', payload['userId']),
+				letterId: Validators.id('letterId', payload['letterId'], {
+					isRequired: true,
+				}),
+				body: Validators.obj('body', payload['body'], {
+					isRequired: true,
+				}),
+				
+			});
+
+			this.balancerService.decrementServiceResponseLoadingIndicator();
+
+			return output;
+		}
+		catch (err) {
+			this.balancerService.log(err);
+			this.balancerService.decrementServiceResponseLoadingIndicator();
+
+			return err;
+		}
+	}
+
 	@EventPattern('letter.create')
 	async create(payload) {
 		try {
