@@ -5,7 +5,9 @@ import {
 	BalancerService, 
 } from 'nest-datum/balancer/src';
 import { CacheService } from 'nest-datum/cache/src';
-import { Template } from '../template/template.entity';
+import { Template } from '../template.entity';
+import { TemplateTemplateTemplateOption } from '../template-template-template-option/template-template-template-option.entity';
+import { TemplateTemplateOption } from '../template-template-option/template-template-option.entity';
 import { LetterStatus } from '../letter-status/letter-status.entity';
 import { LetterLetterLetterOption } from '../letter-letter-letter-option/letter-letter-letter-option.entity';
 import { LetterLetterOption } from '../letter-letter-option/letter-letter-option.entity';
@@ -22,6 +24,8 @@ import { LetterController } from './letter.controller';
 			LetterLetterOption,
 			Letter,
 			Template,
+			TemplateTemplateTemplateOption,
+			TemplateTemplateOption,
 		]),
 	],
 	providers: [

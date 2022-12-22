@@ -20,7 +20,7 @@ export class Report {
 	public reportStatusId: string;
 
 	@ManyToOne(() => ReportStatus, (reportStatus) => reportStatus.reports)
-	public reportStatus: LetterStatus;
+	public reportStatus: ReportStatus;
 
 	@Column()
 	public action: string;
