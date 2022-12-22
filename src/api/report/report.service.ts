@@ -32,7 +32,7 @@ export class ReportService extends SqlService {
 	protected selectDefaultMany = {
 		id: true,
 		userId: true,
-		letterStatusId: true,
+		reportStatusId: true,
 		action: true,
 		content: true,
 		createdAt: true,

@@ -143,7 +143,7 @@ export class ReportController {
 				}),
 				id: Validators.id('id', payload['id']),
 				userId: Validators.id('userId', payload['userId']),
-				letterStatusId: Validators.id('letterStatusId', payload['letterStatusId'], {
+				reportStatusId: Validators.id('reportStatusId', payload['reportStatusId'], {
 					isRequired: true,
 				}),
 				action: Validators.str('action', payload['action'], {
@@ -181,7 +181,7 @@ export class ReportController {
 				id: Validators.id('id', payload['id']),
 				newId: Validators.id('newId', payload['newId']),
 				userId: Validators.id('userId', payload['userId']),
-				letterStatusId: Validators.id('letterStatusId', payload['letterStatusId']),
+				reportStatusId: Validators.id('reportStatusId', payload['reportStatusId']),
 				action: Validators.str('action', payload['action'], {
 					min: 1,
 					max: 255,
