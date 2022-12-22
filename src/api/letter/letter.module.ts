@@ -5,7 +5,7 @@ import {
 	BalancerService, 
 } from 'nest-datum/balancer/src';
 import { CacheService } from 'nest-datum/cache/src';
-import { Template } from '../template.entity';
+import { Template } from '../template/template.entity';
 import { TemplateTemplateTemplateOption } from '../template-template-template-option/template-template-template-option.entity';
 import { TemplateTemplateOption } from '../template-template-option/template-template-option.entity';
 import { LetterStatus } from '../letter-status/letter-status.entity';
