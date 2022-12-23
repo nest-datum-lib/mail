@@ -20,6 +20,7 @@ import {
 	ErrorException,
 	NotFoundException, 
 } from 'nest-datum/exceptions/src';
+import { getFile } from 'nest-datum/common/src';
 import { Letter } from './letter.entity';
 import { LetterLetterLetterOption } from '../letter-letter-letter-option/letter-letter-letter-option.entity';
 import { LetterLetterOption } from '../letter-letter-option/letter-letter-option.entity';
@@ -317,18 +318,17 @@ export class LetterService extends SqlService {
 				},
 			});
 			let i = 0,
-				viewPath = '';
+				viewTarget = '';
 
 			while (i < templateOptionContent.length) {
 				if (templateOptionContent[i].templateTemplateOption['templateOptionId'] === 'mail-template-option-view') {
-					viewPath = templateOptionContent[i]['content'];
+					viewTarget = templateOptionContent[i]['content'];
 					break;
 				}
 				i++;
 			}
-			console.log('viewPath', viewPath);
-
-			const letterContent = await ejs.renderFile(`/home/mail-app/mail/tmp/test.ejs`, {
+			const viewFile = await getFile(viewTarget);
+			const letterContent = await ejs.renderFile(viewFile, {
 				user,
 				payload,
 				letter,
