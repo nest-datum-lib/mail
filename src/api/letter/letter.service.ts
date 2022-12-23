@@ -27,10 +27,12 @@ import { LetterLetterOption } from '../letter-letter-option/letter-letter-option
 import { Template } from '../template/template.entity';
 import { TemplateTemplateTemplateOption } from '../template-template-template-option/template-template-template-option.entity';
 import { TemplateTemplateOption } from '../template-template-option/template-template-option.entity';
+import { Report } from '../report/report.entity';
 
 @Injectable()
 export class LetterService extends SqlService {
 	constructor(
+		@InjectRepository(Report) private readonly reportRepository: Repository<Report>,
 		@InjectRepository(Template) private readonly templateRepository: Repository<Template>,
 		@InjectRepository(TemplateTemplateTemplateOption) private readonly templateTemplateTemplateOptionRepository: Repository<TemplateTemplateTemplateOption>,
 		@InjectRepository(TemplateTemplateOption) private readonly templateTemplateOptionRepository: Repository<TemplateTemplateOption>,
@@ -280,10 +282,10 @@ export class LetterService extends SqlService {
 	}
 
 	async send({ user, ...payload }): Promise<any> {
-		// const queryRunner = await this.connection.createQueryRunner(); 
+		const queryRunner = await this.connection.createQueryRunner(); 
 
 		try {
-			// await queryRunner.startTransaction();
+			await queryRunner.startTransaction();
 			
 			this.cacheService.clear([ 'letter', 'send' ]);
 
@@ -356,18 +358,23 @@ export class LetterService extends SqlService {
 					}],
 			});
 
-			// await queryRunner.commitTransaction();
+			await queryRunner.manager.save(Object.assign(new Report(), {
+				userId: payload['userId'] || user['id'] || 'sso-user-admin',
+				reportStatusId: 'mail-report-status-sent',
+				action: `Single mail sending "${letter['id']}"`,
+				content: `The operation to send the message completed without errors. Email: "${payload['body']['email']}"; Login: "${payload['body']['login']}"`,
+			}));
+
+			await queryRunner.commitTransaction();
 		}
 		catch (err) {
-			console.log('=======', err);
-
-			// await queryRunner.rollbackTransaction();
-			// await queryRunner.release();
+			await queryRunner.rollbackTransaction();
+			await queryRunner.release();
 
 			throw new ErrorException(err.message, getCurrentLine(), { user, ...payload });
 		}
 		finally {
-			// await queryRunner.release();
+			await queryRunner.release();
 		}
 	}
 }
