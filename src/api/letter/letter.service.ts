@@ -354,6 +354,7 @@ export class LetterService extends SqlService {
 							letterOptionContent,
 							template,
 							templateOptionContent,
+							process: process,
 						}),
 						'CustomID': 'AppGettingStartedTest',
 					}],
