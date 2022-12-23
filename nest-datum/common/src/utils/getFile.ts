@@ -4,7 +4,7 @@ const fs = require('fs');
 
 import { generateAccessToken } from 'nest-datum/jwt/src';
 
-const getFile = async (target: string | object) => {
+const getFile = async (target: string | object, checkExists = false) => {
 	let processedTarget = target;
 
 	if (typeof target === 'string') {
@@ -35,12 +35,24 @@ const getFile = async (target: string | object) => {
 			|| typeof processedTarget['systemId'] !== 'string') {
 			throw new Error('Target "systemId" file is wrong format.');
 		}
+		const path = `${process.env.APP_ROOT_PATH}/${processedTarget['fileName']}`;
+
+		if (checkExists) {
+			const isExist = await (new Promise((resolve, reject) => {
+				fs.exists(path, function (isExist) {
+					resolve(isExist);
+				});
+			}));
+
+			if (isExist) {
+				return path;
+			}
+		}
 		const accessToken = generateAccessToken({
 			id: 'sso-user-admin',
 			roleId: 'sso-role-admin',
 			email: process.env.USER_ROOT_EMAIL,
 		}, Date.now());
-		const path = `${process.env.APP_ROOT_PATH}/${processedTarget['fileName']}`;
 		const url = `${process.env.APP_FILES_1_URL}${processedTarget['path']}/${processedTarget['fileName']}?accessToken=${accessToken}`;
 		const file = fs.createWriteStream(path);
 		const request = (url.indexOf('https://') === 0)
