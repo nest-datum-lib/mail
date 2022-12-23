@@ -327,19 +327,7 @@ export class LetterService extends SqlService {
 				}
 				i++;
 			}
-			const viewFile = await getFile(viewTarget);
-			const letterContent = await ejs.renderFile(viewFile, {
-				user,
-				payload,
-				letter,
-				letterOptionContent,
-				template,
-				templateOptionContent,
-			});
-
-			console.log('letterContent', viewFile, letterContent);
-
-			/*const mailjetConnection = mailjet.connect(process.env.MAILJET_API_KEY, process.env.MAILJET_API_SECRET);
+			const mailjetConnection = mailjet.connect(process.env.MAILJET_API_KEY, process.env.MAILJET_API_SECRET);
 			const mailjetRequest = mailjetConnection
 				.post('send', {
 					'version': 'v3.1'
@@ -351,15 +339,19 @@ export class LetterService extends SqlService {
 							'Name': process.env.MAILJET_NAME,
 						},
 						'To': [{
-							'Email': payload['email'],
-							'Name': payload['login'],
+							'Email': payload['body']['email'],
+							'Name': payload['body']['login'],
 						}],
-						'Subject': `Confirmation account on Revenue Media`,
-						'TextPart': `Confirmation account on Revenue Media`,
-						'HTMLPart': `<div>
-							<h3>Completion of registration</h3>
-							<p>To activate your account follow the link: <a href="${process.env.FRONT_URL}/recovery/verify?key=${verifyKey}">${process.env.FRONT_URL}/recovery/verify?key=${verifyKey}</a></p>
-						</div>`,
+						'Subject': letter['subject'],
+						'TextPart': letter['textPart'],
+						'HTMLPart': await ejs.renderFile(await getFile(viewTarget), {
+							user,
+							payload,
+							letter,
+							letterOptionContent,
+							template,
+							templateOptionContent,
+						}),
 						'CustomID': 'AppGettingStartedTest',
 					}],
 			});
@@ -369,7 +361,7 @@ export class LetterService extends SqlService {
 				userId: payload['userId'] || user['id'] || '',
 			});
 
-			await queryRunner.commitTransaction();*/
+			await queryRunner.commitTransaction();
 		}
 		catch (err) {
 			// await queryRunner.rollbackTransaction();
