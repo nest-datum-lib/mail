@@ -1,3 +1,8 @@
+const https = require('https');
+const http = require('http');
+const fs = require('fs');
+
+import { generateAccessToken } from 'nest-datum/jwt/src';
 
 const getFile = (target: string | object) => {
 	let processedTarget = target;
@@ -14,24 +19,72 @@ const getFile = (target: string | object) => {
 		throw new Error('Target file is undefined.');
 	}
 	if (typeof processedTarget === 'object') {
-		// const accessToken = generateAccessToken({
-		// 	id: 'sso-user-admin',
-		// 	roleId: 'sso-role-admin',
-		// 	email: process.env.USER_ROOT_EMAIL,
-		// }, Date.now());
-		// const url = payloadData['file'] + (isInnerUrl
-		// 	? (accessTokenExists
-		// 		? ''
-		// 		: (payloadData['file'].includes(`${appFileUrls[urlIndex]}?`)
-		// 			? `&accessToken=${accessToken}`
-		// 			: `?accessToken=${accessToken}`))
-		// 	: undefined);
+		if (!processedTarget['fileName']
+			|| typeof processedTarget['fileName'] !== 'string') {
+			throw new Error('Target "fileName" file is wrong format.');
+		}
+		if (!processedTarget['path']
+			|| typeof processedTarget['path'] !== 'string') {
+			throw new Error('Target "path" file is wrong format.');
+		}
+		if (!processedTarget['src']
+			|| typeof processedTarget['src'] !== 'string') {
+			throw new Error('Target "src" file is wrong format.');
+		}
+		if (!processedTarget['systemId']
+			|| typeof processedTarget['systemId'] !== 'string') {
+			throw new Error('Target "systemId" file is wrong format.');
+		}
+		const accessToken = generateAccessToken({
+			id: 'sso-user-admin',
+			roleId: 'sso-role-admin',
+			email: process.env.USER_ROOT_EMAIL,
+		}, Date.now());
+		const path = `${process.env.APP_ROOT_PATH}/${processedTarget['fileName']}`;
+		const url = `${process.env.APP_FILES_1_URL}${processedTarget['path']}/${processedTarget['fileName']}?accessToken=${accessToken}`;
+		const file = fs.createWriteStream(path);
+		const request = (url.indexOf('https://') === 0)
+			? https
+			: http;
+
+		await (new Promise((resolve, reject) => {
+			const fetch = request.get(url, (response) => {
+				if (response.statusCode !== 200
+					&& response.statusCode !== 201) {
+					return reject(new Error(`Request file "${url.toString()}" error`));
+				}
+				response.pipe(file);
+			});
+
+			fetch.on('error', (errRequest) => {
+				fs.unlink(path, (errUnlink) => {
+					if (errUnlink) {
+						return reject(new Error(errUnlink.message));
+					}
+					return reject(new Error(errRequest.message));
+				});
+			});
+
+			file.on('finish', () => {
+				file.close();
+
+				return resolve(true);
+			});
+
+			file.on('error', (errFile) => {
+				fs.unlink(path, (errUnlink) => {
+					if (errUnlink) {
+						return reject(new Error(errUnlink.message));
+					}
+					return reject(new Error(errFile.message));
+				});
+			});
+		}));
+		return path;
 	}
 	else {
-
+		return '';
 	}
-
-	return `/home/mail-app/mail/tmp/test.ejs`;
 };
 
 export default getFile;
