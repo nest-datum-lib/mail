@@ -356,11 +356,6 @@ export class LetterService extends SqlService {
 					}],
 			});
 
-			const output = await this.letterRepository.save({
-				...payload,
-				userId: payload['userId'] || user['id'] || '',
-			});
-
 			// await queryRunner.commitTransaction();
 		}
 		catch (err) {
