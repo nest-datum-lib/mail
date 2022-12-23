@@ -321,14 +321,20 @@ export class LetterService extends SqlService {
 			console.log('template', template);
 			console.log('templateOptionContent', templateOptionContent);
 
-			ejs.renderFile(`/home/mail-app/mail/tmp/test.ejs`, {
+			const aaa = await ejs.renderFile(`/home/mail-app/mail/tmp/test.ejs`, {
 				test: 'hello'
-			}, {}, (err, str) => {
-				if (err) {
-					console.error(err);
-				}
-				console.log('!!!!!!!!!!!!1', str);
 			});
+
+			console.log('aaaaaaaaaaaaaaa', aaa);
+
+			// ejs.renderFile(`/home/mail-app/mail/tmp/test.ejs`, {
+			// 	test: 'hello'
+			// }, {}, (err, str) => {
+			// 	if (err) {
+			// 		console.error(err);
+			// 	}
+			// 	console.log('!!!!!!!!!!!!1', str);
+			// });
 
 			/*const mailjetConnection = mailjet.connect(process.env.MAILJET_API_KEY, process.env.MAILJET_API_SECRET);
 			const mailjetRequest = mailjetConnection
