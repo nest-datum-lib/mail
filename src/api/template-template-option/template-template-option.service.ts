@@ -162,8 +162,6 @@ export class TemplateTemplateOptionService extends SqlService {
 			return templateOptionRelation;
 		}
 		catch (err) {
-			console.log('errr', err);
-
 			await queryRunner.rollbackTransaction();
 			await queryRunner.release();
 
