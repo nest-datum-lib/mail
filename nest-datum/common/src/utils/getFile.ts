@@ -4,7 +4,7 @@ const fs = require('fs');
 
 import { generateAccessToken } from 'nest-datum/jwt/src';
 
-const getFile = (target: string | object) => {
+const getFile = async (target: string | object) => {
 	let processedTarget = target;
 
 	if (typeof target === 'string') {
