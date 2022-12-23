@@ -321,7 +321,7 @@ export class LetterService extends SqlService {
 			console.log('template', template);
 			console.log('templateOptionContent', templateOptionContent);
 
-			ejs.renderFile(`/home/mail-app/mail/tmp/test.hbs`, {
+			ejs.renderFile(`/home/mail-app/mail/tmp/test.ejs`, {
 				test: 'hello'
 			}, {}, (err, str) => {
 				if (err) {
