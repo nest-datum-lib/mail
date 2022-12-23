@@ -316,7 +316,17 @@ export class LetterService extends SqlService {
 					},
 				},
 			});
-			console.log('templateOptionContent', templateOptionContent);
+			let i = 0,
+				viewPath = '';
+
+			while (i < templateOptionContent.length) {
+				if (templateOptionContent[i].templateTemplateOption['templateOptionId'] === 'mail-template-option-view') {
+					viewPath = templateOptionContent[i]['content'];
+					break;
+				}
+				i++;
+			}
+			console.log('viewPath', viewPath);
 
 			const letterContent = await ejs.renderFile(`/home/mail-app/mail/tmp/test.ejs`, {
 				user,
