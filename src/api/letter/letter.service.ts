@@ -361,18 +361,18 @@ export class LetterService extends SqlService {
 				userId: payload['userId'] || user['id'] || '',
 			});
 
-			await queryRunner.commitTransaction();
+			// await queryRunner.commitTransaction();
 		}
 		catch (err) {
 			console.log('=======', err);
 
-			await queryRunner.rollbackTransaction();
-			await queryRunner.release();
+			// await queryRunner.rollbackTransaction();
+			// await queryRunner.release();
 
 			throw new ErrorException(err.message, getCurrentLine(), { user, ...payload });
 		}
 		finally {
-			await queryRunner.release();
+			// await queryRunner.release();
 		}
 	}
 }
