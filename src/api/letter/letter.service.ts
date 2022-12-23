@@ -288,6 +288,7 @@ export class LetterService extends SqlService {
 			await queryRunner.startTransaction();
 			
 			this.cacheService.clear([ 'letter', 'send' ]);
+			this.cacheService.clear([ 'report', 'many' ]);
 
 			const letter = await this.letterRepository.findOne({
 				where: {
@@ -358,13 +359,6 @@ export class LetterService extends SqlService {
 					}],
 			});
 
-			console.log('!!!!!!!!!!!!!!', {
-				userId: payload['userId'] || user['id'] || 'sso-user-admin',
-				reportStatusId: 'mail-report-status-sent',
-				action: `Single mail sending "${letter['id']}"`,
-				content: `The operation to send the message completed without errors. Email: "${payload['body']['email']}"; Login: "${payload['body']['login']}"`,
-			});
-
 			await queryRunner.manager.save(Object.assign(new Report(), {
 				userId: payload['userId'] || user['id'] || 'sso-user-admin',
 				reportStatusId: 'mail-report-status-sent',
@@ -375,8 +369,6 @@ export class LetterService extends SqlService {
 			await queryRunner.commitTransaction();
 		}
 		catch (err) {
-			console.log('err', err);
-
 			await queryRunner.rollbackTransaction();
 			await queryRunner.release();
 
