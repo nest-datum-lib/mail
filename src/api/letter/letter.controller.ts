@@ -136,8 +136,6 @@ export class LetterController {
 	@EventPattern('letter.send')
 	async send(payload) {
 		try {
-			console.log('payload', payload);
-			
 			const output = await this.letterService.send({
 				user: Validators.token('accessToken', payload['accessToken'], {
 					accesses: [ process['ACCESS_MAIL_LETTER_CREATE'] ],

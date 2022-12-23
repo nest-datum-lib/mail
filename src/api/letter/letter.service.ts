@@ -303,10 +303,21 @@ export class LetterService extends SqlService {
 					id: letter['templateId'],
 				},
 			});
+			const templateOptionContent = await this.templateTemplateTemplateOptionRepository.find({
+				where: {
+					templateId: letter['templateId'],
+				},
+				relations: {
+					templateTemplateOption: {
+						templateOption: true,
+					},
+				},
+			});
 
 			console.log('letter', letter);
 			console.log('letterOptionContent', letterOptionContent);
 			console.log('template', template);
+			console.log('templateOptionContent', templateOptionContent);
 
 			/*const mailjetConnection = mailjet.connect(process.env.MAILJET_API_KEY, process.env.MAILJET_API_SECRET);
 			const mailjetRequest = mailjetConnection
