@@ -364,13 +364,15 @@ export class LetterService extends SqlService {
 			await queryRunner.commitTransaction();
 		}
 		catch (err) {
-			// await queryRunner.rollbackTransaction();
-			// await queryRunner.release();
+			console.log('=======', err);
+
+			await queryRunner.rollbackTransaction();
+			await queryRunner.release();
 
 			throw new ErrorException(err.message, getCurrentLine(), { user, ...payload });
 		}
 		finally {
-			// await queryRunner.release();
+			await queryRunner.release();
 		}
 	}
 }
