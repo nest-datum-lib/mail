@@ -337,7 +337,7 @@ export class LetterService extends SqlService {
 				templateOptionContent,
 			});
 
-			console.log('letterContent', letterContent);
+			console.log('letterContent', viewTarget, letterContent);
 
 			/*const mailjetConnection = mailjet.connect(process.env.MAILJET_API_KEY, process.env.MAILJET_API_SECRET);
 			const mailjetRequest = mailjetConnection
