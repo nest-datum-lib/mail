@@ -1,3 +1,5 @@
+const ejs = require('ejs');
+
 import { v4 as uuidv4 } from 'uuid';
 import Redis from 'ioredis';
 import getCurrentLine from 'get-current-line';
@@ -318,6 +320,15 @@ export class LetterService extends SqlService {
 			console.log('letterOptionContent', letterOptionContent);
 			console.log('template', template);
 			console.log('templateOptionContent', templateOptionContent);
+
+			ejs.renderFile(`/home/mail-app/mail/tmp/test.hbs`, {
+				test: 'hello'
+			}, {}, (err, str) => {
+				if (err) {
+					console.error(err);
+				}
+				console.log('!!!!!!!!!!!!1', str);
+			});
 
 			/*const mailjetConnection = mailjet.connect(process.env.MAILJET_API_KEY, process.env.MAILJET_API_SECRET);
 			const mailjetRequest = mailjetConnection
