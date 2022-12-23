@@ -1,4 +1,5 @@
 const ejs = require('ejs');
+const mailjet = require('node-mailjet');
 
 import { v4 as uuidv4 } from 'uuid';
 import Redis from 'ioredis';
@@ -315,26 +316,18 @@ export class LetterService extends SqlService {
 					},
 				},
 			});
-
-			console.log('letter', letter);
-			console.log('letterOptionContent', letterOptionContent);
-			console.log('template', template);
 			console.log('templateOptionContent', templateOptionContent);
 
-			const aaa = await ejs.renderFile(`/home/mail-app/mail/tmp/test.ejs`, {
-				test: 'hello'
+			const letterContent = await ejs.renderFile(`/home/mail-app/mail/tmp/test.ejs`, {
+				user,
+				payload,
+				letter,
+				letterOptionContent,
+				template,
+				templateOptionContent,
 			});
 
-			console.log('aaaaaaaaaaaaaaa', aaa);
-
-			// ejs.renderFile(`/home/mail-app/mail/tmp/test.ejs`, {
-			// 	test: 'hello'
-			// }, {}, (err, str) => {
-			// 	if (err) {
-			// 		console.error(err);
-			// 	}
-			// 	console.log('!!!!!!!!!!!!1', str);
-			// });
+			console.log('letterContent', letterContent);
 
 			/*const mailjetConnection = mailjet.connect(process.env.MAILJET_API_KEY, process.env.MAILJET_API_SECRET);
 			const mailjetRequest = mailjetConnection
