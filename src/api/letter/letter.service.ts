@@ -22,6 +22,7 @@ import {
 	NotFoundException, 
 } from 'nest-datum/exceptions/src';
 import { getFile } from 'nest-datum/common/src';
+import { generateAccessToken } from 'nest-datum/jwt/src';
 import { Letter } from './letter.entity';
 import { LetterLetterLetterOption } from '../letter-letter-letter-option/letter-letter-letter-option.entity';
 import { LetterLetterOption } from '../letter-letter-option/letter-letter-option.entity';
@@ -332,6 +333,11 @@ export class LetterService extends SqlService {
 				}
 				i++;
 			}
+			const accessToken = generateAccessToken({
+				id: 'sso-user-admin',
+				roleId: 'sso-role-admin',
+				email: process.env.USER_ROOT_EMAIL,
+			}, Date.now());
 			const viewFile = await this.balancerService.send({
 				name: process.env.SERVICE_FILES, 
 				cmd: 'file.one',
