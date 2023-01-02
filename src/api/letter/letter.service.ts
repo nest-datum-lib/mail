@@ -363,7 +363,7 @@ export class LetterService extends SqlService {
 						}],
 						'Subject': letter['subject'],
 						'TextPart': letter['textPart'],
-						'HTMLPart': await ejs.renderFile(await getFile(viewFile), {
+						'HTMLPart': await ejs.renderFile(await getFile(viewFile, accessToken), {
 							user,
 							payload,
 							letter,
