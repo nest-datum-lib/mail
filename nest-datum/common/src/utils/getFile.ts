@@ -42,7 +42,7 @@ const getFile = async (target: string | object, accessToken: string, checkExists
 				return path;
 			}
 		}
-		const url = `${process.env.APP_FILES_1_URL}${processedTarget['path']}/${processedTarget['name']}?accessToken=${accessToken}`;
+		const url = `${process.env.APP_FILES_1_URL}${processedTarget['path']}?accessToken=${accessToken}`;
 		const file = fs.createWriteStream(path);
 		const request = (url.indexOf('https://') === 0)
 			? https
