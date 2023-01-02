@@ -15,6 +15,7 @@ import {
 	Connection, 
 } from 'typeorm';
 import { SqlService } from 'nest-datum/sql/src';
+import { BalancerService } from 'nest-datum/balancer/src';
 import { CacheService } from 'nest-datum/cache/src';
 import { 
 	ErrorException,
@@ -41,6 +42,7 @@ export class LetterService extends SqlService {
 		@InjectRepository(LetterLetterOption) private readonly letterLetterOptionRepository: Repository<LetterLetterOption>,
 		private readonly connection: Connection,
 		private readonly cacheService: CacheService,
+		private readonly balancerService: BalancerService,
 	) {
 		super();
 	}
@@ -330,6 +332,14 @@ export class LetterService extends SqlService {
 				}
 				i++;
 			}
+			const viewFile = await this.balancerService.send({
+				name: process.env.SERVICE_FILES, 
+				cmd: 'file.one',
+			}, {
+				accessToken,
+				id: viewTarget,
+			});
+
 			const mailjetConnection = mailjet.connect(process.env.MAILJET_API_KEY, process.env.MAILJET_API_SECRET);
 			const mailjetRequest = mailjetConnection
 				.post('send', {
@@ -347,7 +357,7 @@ export class LetterService extends SqlService {
 						}],
 						'Subject': letter['subject'],
 						'TextPart': letter['textPart'],
-						'HTMLPart': await ejs.renderFile(await getFile(viewTarget), {
+						'HTMLPart': await ejs.renderFile(await getFile(viewFile), {
 							user,
 							payload,
 							letter,
