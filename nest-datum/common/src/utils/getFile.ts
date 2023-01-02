@@ -25,10 +25,6 @@ const getFile = async (target: string | object, accessToken: string, checkExists
 			|| typeof processedTarget['path'] !== 'string') {
 			throw new Error('Target "path" file is wrong format.');
 		}
-		if (!processedTarget['src']
-			|| typeof processedTarget['src'] !== 'string') {
-			throw new Error('Target "src" file is wrong format.');
-		}
 		if (!processedTarget['systemId']
 			|| typeof processedTarget['systemId'] !== 'string') {
 			throw new Error('Target "systemId" file is wrong format.');
