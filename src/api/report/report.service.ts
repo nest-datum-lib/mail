@@ -38,10 +38,7 @@ export class ReportService extends SqlService {
 		reportStatusId: true,
 		action: true,
 		content: true,
-		isDeleted: true,
-		isNotDelete: true,
 		createdAt: true,
-		updatedAt: true,
 	};
 
 	protected queryDefaultMany = {
