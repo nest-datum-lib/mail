@@ -130,7 +130,7 @@ export class EmailService {
 			accessToken,
 		});
 		console.log('111', viewFile);
-		console.log('222', body['login'], email, letterData['letter']['subject'], letterData['letter']['textPart']);
+		console.log('222', body, body['login'], email, letterData['letter']['subject'], letterData['letter']['textPart']);
 
 		try {
 			const mailjetConnection = mailjet.connect(process.env.MAILJET_API_KEY, process.env.MAILJET_API_SECRET);
