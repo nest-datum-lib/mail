@@ -111,12 +111,9 @@ export class EmailService {
 	}
 
 	async send(letterId: string, email: string, action: string, body): Promise<any> {
-		console.log('>>>', letterId, email, body);
-
 		const letterData = await this.getLetterData(letterId);
 		const viewId = await this.getViewId(letterData['templateOptionContent']);
 		
-		console.log('000', viewId);
 		const accessToken = generateAccessToken({
 			id: process.env.USER_ID,
 			roleId: process.env.USER_ADMIN_ROLE,
@@ -129,46 +126,38 @@ export class EmailService {
 			id: viewId,
 			accessToken,
 		});
-		console.log('111', viewFile);
-		console.log('222', body, body['login'], email, letterData['letter']['subject'], letterData['letter']['textPart']);
-
-		try {
-			const mailjetConnection = mailjet.connect(process.env.MAILJET_API_KEY, process.env.MAILJET_API_SECRET);
-				const mailjetRequest = mailjetConnection
-					.post('send', {
-						'version': 'v3.1'
-					})
-					.request({
-						'Messages': [{
-							'From': {
-								'Email': process.env.MAILJET_EMAIL,
-								'Name': process.env.MAILJET_NAME,
-							},
-							'To': [{
-								'Email': email,
-								'Name': body['login'] || process.env.USER_LOGIN,
-							}],
-							'Subject': letterData['letter']['subject'],
-							'TextPart': letterData['letter']['textPart'],
-							'HTMLPart': await ejs.renderFile(await utilsFilesDownload(viewFile, accessToken), {
-								props: body,
-								data: letterData,
-								process: process,
-							}),
+		const mailjetConnection = mailjet.connect(process.env.MAILJET_API_KEY, process.env.MAILJET_API_SECRET);
+		const mailjetRequest = mailjetConnection
+			.post('send', {
+				'version': 'v3.1'
+			})
+			.request({
+				'Messages': [{
+					'From': {
+						'Email': process.env.MAILJET_EMAIL,
+						'Name': process.env.MAILJET_NAME,
+					},
+					'To': [{
+						'Email': email,
+						'Name': body['login'] || process.env.USER_LOGIN,
+					}],
+					'Subject': letterData['letter']['subject'],
+					'TextPart': letterData['letter']['textPart'],
+					'HTMLPart': await ejs.renderFile(await utilsFilesDownload(viewFile, accessToken), {
+						props: body,
+						data: letterData,
+						process: process,
+					}),
 							'CustomID': 'AppGettingStartedTest',
-						}],
-				});
-
-			await this.reportRepository.save({
-				userId: body['userId'] || process.env.USER_ID,
-				reportStatusId: 'mail-report-status-sent',
-				action,
-				content: JSON.stringify(body),
+				}],
 			});
-		}
-		catch (err) {
-			console.log('#########', err);
-		}
+
+		await this.reportRepository.save({
+			userId: body['userId'] || process.env.USER_ID,
+			reportStatusId: 'mail-report-status-sent',
+			action,
+			content: JSON.stringify(body),
+		});
 		return {
 			props: body,
 			data: letterData,
