@@ -60,24 +60,8 @@ export class ReportService extends SqlService {
 		delete payload['refreshToken'];
 		delete payload['email'];
 		delete payload['login'];
-
-		try {
-			payload['content'] = JSON.stringify(content);
-		}
-		catch (err) {
-			payload['content'] = 'null';
-		}
 		
 		this.cacheService.clear([ this.entityName, 'many' ]);
-
-		console.log('???????', await this.createProps({
-			...payload,
-			...payload['userId']
-				? { userId: payload['userId'] }
-				: {},
-			email,
-			content: JSON.stringify(payload['content']),
-		}));
 
 		const output = await this.repository.save(await this.createProps({
 			...payload,
