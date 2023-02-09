@@ -7,7 +7,14 @@ export class TcpController extends Controller {
 	public service;
 
 	async many(payload) {
-		return await this.serviceHandlerWrapper(async () => await this.service.many(await this.validateMany(payload)));
+		return await this.serviceHandlerWrapper(async () => {
+			const many = await this.service.many(await this.validateMany(payload));
+
+			return {
+				rows: many[0],
+				total: many[1],
+			};
+		});
 	}
 
 	async one(payload) {

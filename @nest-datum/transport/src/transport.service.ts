@@ -16,6 +16,7 @@ import {
 	Exception,
 } from '@nest-datum-common/exceptions';
 import {
+	arr as utilsCheckArr,
 	obj as utilsCheckObj,
 	strId as utilsCheckStrId,
 	strHost as utilsCheckStrHost,
@@ -258,7 +259,8 @@ export class TransportService extends RedisService {
 				.send({ cmd }, payload)
 				.pipe(map(response => response)));
 
-			if (!utilsCheckObj(connectionInstanceResponse)) {
+			if (!utilsCheckObj(connectionInstanceResponse)
+				&& !utilsCheckArr(connectionInstanceResponse)) {
 				throw new NotFoundException(`Resource not found.`);
 			}
 			else if (utilsCheckNumericInt(connectionInstanceResponse['errorCode'])) {
