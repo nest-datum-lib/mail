@@ -16,6 +16,8 @@ import {
 	SqlModule,
 	SqlService, 
 } from '@nest-datum/sql';
+import { EmailModule } from '../email/email.module';
+import { EmailService } from '../email/email.service';
 import { ReportService } from './report.service';
 import { ReportController } from './report.controller';
 import { Report } from './report.entity';
@@ -28,12 +30,14 @@ import { Report } from './report.entity';
 		TransportModule,
 		CacheModule,
 		SqlModule,
+		EmailModule,
 	],
 	providers: [
 		ReplicaService,
 		TransportService,
 		CacheService,
 		SqlService,
+		EmailService,
 		ReportService, 
 	],
 })

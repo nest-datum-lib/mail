@@ -34,6 +34,9 @@ export class ReportController extends NestDatumTcpController {
 		if (!utilsCheckStr(options['content'])) {
 			throw new WarningException(`Property "content" is not valid.`);
 		}
+		if (!utilsCheckStrId(options['letterId'])) {
+			throw new WarningException(`Property "letterId" is not valid.`);
+		}
 		if (!utilsCheckStrId(options['reportStatusId'])) {
 			throw new WarningException(`Property "reportStatusId" is not valid.`);
 		}
@@ -41,8 +44,15 @@ export class ReportController extends NestDatumTcpController {
 	}
 
 	async validateUpdate(options) {
+		if (!checkToken(options['accessToken'], process.env.JWT_SECRET_ACCESS_KEY)) {
+			throw new WarningException(`User is undefined or token is not valid.`);
+		}
+		const user = getUser(options['accessToken']);
+
 		return {
 			...await super.validateUpdate(options),
+			login: user['login'],
+			email: user['email'],
 			...(options['action'] && utilsCheckStrDescription(options['action'])) 
 				? { action: options['action'] } 
 				: {},
@@ -51,6 +61,9 @@ export class ReportController extends NestDatumTcpController {
 				: {},
 			...(options['reportStatusId'] && utilsCheckStrId(options['reportStatusId'])) 
 				? { reportStatusId: options['reportStatusId'] } 
+				: {},
+			...(options['letterId'] && utilsCheckStrId(options['letterId'])) 
+				? { letterId: options['letterId'] } 
 				: {},
 		};
 	}

@@ -16,7 +16,12 @@ export class Report {
 	public userId: string;
 
 	@Column({ default: '' })
+	@Index()
 	public reportStatusId: string;
+
+	@Column({ default: '' })
+	@Index()
+	public letterId: string;
 
 	@Column()
 	@Index()
