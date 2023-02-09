@@ -110,7 +110,7 @@ export class EmailService {
 		return viewTarget;
 	}
 
-	async send(letterId: string, email: string, body): Promise<any> {
+	async send(letterId: string, email: string, action: string, body): Promise<any> {
 		const letterData = await this.getLetterData(letterId);
 		const viewId = await this.getViewId(letterData['templateOptionContent']);
 		const accessToken = generateAccessToken({
@@ -154,7 +154,7 @@ export class EmailService {
 		await this.reportRepository.save({
 			userId: body['userId'] || process.env.USER_ID,
 			reportStatusId: 'mail-report-status-sent',
-			action: `Single mail sending "${letterData['letter']['id']}"`,
+			action,
 			content: JSON.stringify(body),
 		});
 

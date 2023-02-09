@@ -71,7 +71,7 @@ export class ReportService extends SqlService {
 		}));
 
 		if (payload['reportStatusId'] === 'mail-report-status-send') {
-			this.emailService.send(payload['letterId'], email, {
+			this.emailService.send(payload['letterId'], email, payload['action'], {
 				login,
 				...payload,
 			});
@@ -102,8 +102,10 @@ export class ReportService extends SqlService {
 				: {},
 		});
 
-		if (payload['reportStatusId'] === 'mail-report-status-send') {
-			this.emailService.send(payload['letterId'], email, {
+		if (payload['reportStatusId'] === 'mail-report-status-send'
+			&& payload['letterId']
+			&& payload['action']) {
+			this.emailService.send(payload['letterId'], email, payload['action'], {
 				...await this.createProps({ 
 					login,
 					...payload,
