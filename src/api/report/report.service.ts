@@ -68,6 +68,7 @@ export class ReportService extends SqlService {
 			...payload['userId']
 				? { userId: payload['userId'] }
 				: {},
+			email,
 		}));
 
 		if (payload['reportStatusId'] === 'mail-report-status-send') {
@@ -100,6 +101,7 @@ export class ReportService extends SqlService {
 			...newId
 				? { id: newId }
 				: {},
+			email,
 		});
 
 		if (payload['reportStatusId'] === 'mail-report-status-send'
