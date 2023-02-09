@@ -16,6 +16,12 @@ import {
 	SqlModule,
 	SqlService, 
 } from '@nest-datum/sql';
+import { Template } from '../template/template.entity';
+import { TemplateTemplateTemplateOption } from '../template-template-template-option/template-template-template-option.entity';
+import { TemplateTemplateOption } from '../template-template-option/template-template-option.entity';
+import { Letter } from '../letter/letter.entity';
+import { LetterLetterLetterOption } from '../letter-letter-letter-option/letter-letter-letter-option.entity';
+import { LetterLetterOption } from '../letter-letter-option/letter-letter-option.entity';
 import { EmailModule } from '../email/email.module';
 import { EmailService } from '../email/email.service';
 import { ReportService } from './report.service';
@@ -25,7 +31,15 @@ import { Report } from './report.entity';
 @Module({
 	controllers: [ ReportController ],
 	imports: [
-		TypeOrmModule.forFeature([ Report ]),
+		TypeOrmModule.forFeature([ 
+			TemplateTemplateOption,
+			TemplateTemplateTemplateOption,
+			Template,
+			LetterLetterOption,
+			LetterLetterLetterOption,
+			Letter,
+			Report, 
+		]),
 		ReplicaModule,
 		TransportModule,
 		CacheModule,
