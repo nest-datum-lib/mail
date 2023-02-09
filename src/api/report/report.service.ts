@@ -41,6 +41,7 @@ export class ReportService extends SqlService {
 		reportStatusId: true,
 		action: true,
 		content: true,
+		email: true,
 		letterId: true,
 		createdAt: true,
 	};
@@ -70,10 +71,9 @@ export class ReportService extends SqlService {
 		}));
 
 		if (payload['reportStatusId'] === 'mail-report-status-send') {
-			this.emailService.send(payload['letterId'], {
-				...payload,
-				email,
+			this.emailService.send(payload['letterId'], email, {
 				login,
+				...payload,
 			});
 		}
 		return output;
@@ -93,20 +93,24 @@ export class ReportService extends SqlService {
 		this.cacheService.clear([ this.entityName, 'one' ]);
 
 		await this.repository.update({ id: payload['id'] }, {
-			...await this.createProps({ ...payload }),
+			...await this.createProps({ 
+				login,
+				...payload,
+			}),
 			...newId
 				? { id: newId }
 				: {},
 		});
 
 		if (payload['reportStatusId'] === 'mail-report-status-send') {
-			this.emailService.send(payload['letterId'], {
-				...payload,
+			this.emailService.send(payload['letterId'], email, {
+				...await this.createProps({ 
+					login,
+					...payload,
+				}),
 				...newId
 					? { id: newId }
 					: {},
-				email,
-				login,
 			});
 		}
 

@@ -23,6 +23,10 @@ export class Report {
 	@Index()
 	public letterId: string;
 
+	@Column({ default: '' })
+	@Index()
+	public email: string;
+
 	@Column()
 	@Index()
 	public action: string;

@@ -110,7 +110,7 @@ export class EmailService {
 		return viewTarget;
 	}
 
-	async send(letterId: string, body): Promise<any> {
+	async send(letterId: string, email: string, body): Promise<any> {
 		const letterData = await this.getLetterData(letterId);
 		const viewId = await this.getViewId(letterData['templateOptionContent']);
 		const accessToken = generateAccessToken({
@@ -137,7 +137,7 @@ export class EmailService {
 							'Name': process.env.MAILJET_NAME,
 						},
 						'To': [{
-							'Email': body['email'],
+							'Email': email,
 							'Name': body['login'],
 						}],
 						'Subject': letterData['letter']['subject'],
@@ -155,7 +155,7 @@ export class EmailService {
 			userId: body['userId'] || process.env.USER_ID,
 			reportStatusId: 'mail-report-status-sent',
 			action: `Single mail sending "${letterData['letter']['id']}"`,
-			content: `The operation to send the message completed without errors. Email: "${body['email']}"; Login: "${body['login']}"`,
+			content: JSON.stringify(body),
 		});
 
 		return {

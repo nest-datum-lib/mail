@@ -10,6 +10,7 @@ import {
 	str as utilsCheckStr,
 	strId as utilsCheckStrId,
 	strName as utilsCheckStrName,
+	strEmail as utilsCheckStrEmail,
 	strDescription as utilsCheckStrDescription,
 } from '@nest-datum-utils/check';
 import { 
@@ -40,6 +41,9 @@ export class ReportController extends NestDatumTcpController {
 		if (!utilsCheckStrId(options['reportStatusId'])) {
 			throw new WarningException(`Property "reportStatusId" is not valid.`);
 		}
+		if (!utilsCheckStrEmail(options['email'])) {
+			throw new WarningException(`Property "email" is not valid.`);
+		}
 		return await this.validateUpdate(options);
 	}
 
@@ -52,12 +56,14 @@ export class ReportController extends NestDatumTcpController {
 		return {
 			...await super.validateUpdate(options),
 			login: user['login'],
-			email: user['email'],
+			...(options['email'] && utilsCheckStrEmail(options['email'])) 
+				? { email: options['email'] } 
+				: {},
 			...(options['action'] && utilsCheckStrDescription(options['action'])) 
 				? { action: options['action'] } 
 				: {},
 			...(options['content'] && utilsCheckStr(options['content'])) 
-				? { content: options['content'] } 
+				? { content: JSON.parse(options['content']) } 
 				: {},
 			...(options['reportStatusId'] && utilsCheckStrId(options['reportStatusId'])) 
 				? { reportStatusId: options['reportStatusId'] } 
