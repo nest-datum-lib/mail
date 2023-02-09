@@ -146,7 +146,7 @@ export class EmailService {
 							},
 							'To': [{
 								'Email': email,
-								'Name': body['login'],
+								'Name': body['login'] || process.env.USER_LOGIN,
 							}],
 							'Subject': letterData['letter']['subject'],
 							'TextPart': letterData['letter']['textPart'],
