@@ -382,16 +382,23 @@ export class SqlService {
 	}
 
 	async many({ user, ...payload }): Promise<any> {
+		console.log('000', { user, ...payload })
+		console.log('111', this.entityName)
+
 		const cachedData = await this.cacheService.get([ this.entityName, 'many', payload ]);
+
+		console.log('222', cachedData)
 
 		if (cachedData) {
 			return cachedData;
 		}
+		console.log('333', this.selectDefaultMany)
 		if (!payload['sort'] && this.selectDefaultMany['createdAt']) {
 			payload['sort'] = { createdAt: 'DESC' };
 		}
+		console.log('444', await this.findMany(payload))
 		const output = await this.repository.findAndCount(await this.findMany(payload));
-
+		console.log('555', output)
 		await this.cacheService.set([ this.entityName, 'many', payload ], JSON.stringify(output));
 
 		return output;
