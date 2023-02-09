@@ -53,6 +53,8 @@ export class ReportController extends NestDatumTcpController {
 		}
 		const user = getUser(options['accessToken']);
 
+		console.log('validateUpdate', user);
+
 		return {
 			...await super.validateUpdate(options),
 			login: user['login'],
