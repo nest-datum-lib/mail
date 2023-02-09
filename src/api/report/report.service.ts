@@ -63,6 +63,14 @@ export class ReportService extends SqlService {
 		
 		this.cacheService.clear([ this.entityName, 'many' ]);
 
+		console.log('???????', await this.createProps({
+			...payload,
+			...payload['userId']
+				? { userId: payload['userId'] }
+				: {},
+			email,
+		}));
+
 		const output = await this.repository.save(await this.createProps({
 			...payload,
 			...payload['userId']
@@ -92,17 +100,6 @@ export class ReportService extends SqlService {
 
 		this.cacheService.clear([ this.entityName, 'many' ]);
 		this.cacheService.clear([ this.entityName, 'one' ]);
-
-		console.log('???????', {
-			...await this.createProps({ 
-				login,
-				...payload,
-			}),
-			...newId
-				? { id: newId }
-				: {},
-			email,
-		});
 
 		await this.repository.update({ id: payload['id'] }, {
 			...await this.createProps({ 
