@@ -36,7 +36,6 @@ export class LetterController extends NestDatumTcpOptionController {
 		if (!utilsCheckStrDescription(options['textPart'])) {
 			throw new WarningException(`Property "textPart" is not valid.`);
 		}
-		console.log('options', options);
 		if (!utilsCheckStrId(options['templateId'])) {
 			throw new WarningException(`Property "templateId" is not valid.`);
 		}
