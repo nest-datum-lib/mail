@@ -10,7 +10,7 @@ import { Letter } from '../letter/letter.entity';
 @Entity()
 export class LetterLetterLetterOption extends NestDatumOptionOptionOption {
 	@Column()
-	public LetterLetterOptionId: string;
+	public letterLetterOptionId: string;
 
 	@ManyToOne(() => LetterLetterOption, (letterLetterOption) => letterLetterOption.letterLetterLetterOptions, {
 		onDelete: 'CASCADE'

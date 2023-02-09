@@ -10,7 +10,7 @@ import { Template } from '../template/template.entity';
 @Entity()
 export class TemplateTemplateTemplateOption extends NestDatumOptionOptionOption {
 	@Column()
-	public TemplateTemplateOptionId: string;
+	public templateTemplateOptionId: string;
 
 	@ManyToOne(() => TemplateTemplateOption, (templateTemplateOption) => templateTemplateOption.templateTemplateTemplateOptions, {
 		onDelete: 'CASCADE'
