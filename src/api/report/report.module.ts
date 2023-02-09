@@ -22,7 +22,6 @@ import { TemplateTemplateOption } from '../template-template-option/template-tem
 import { Letter } from '../letter/letter.entity';
 import { LetterLetterLetterOption } from '../letter-letter-letter-option/letter-letter-letter-option.entity';
 import { LetterLetterOption } from '../letter-letter-option/letter-letter-option.entity';
-import { EmailModule } from '../email/email.module';
 import { EmailService } from '../email/email.service';
 import { ReportService } from './report.service';
 import { ReportController } from './report.controller';
@@ -44,7 +43,6 @@ import { Report } from './report.entity';
 		TransportModule,
 		CacheModule,
 		SqlModule,
-		EmailModule,
 	],
 	providers: [
 		ReplicaService,
