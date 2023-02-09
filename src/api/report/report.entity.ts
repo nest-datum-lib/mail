@@ -4,9 +4,8 @@ import {
 	Column,
 	CreateDateColumn,
 	UpdateDateColumn,
-	ManyToOne,
+	Index,
 } from 'typeorm';
-import { ReportStatus } from '../report-status/report-status.entity';
 
 @Entity()
 export class Report {
@@ -19,10 +18,8 @@ export class Report {
 	@Column({ default: '' })
 	public reportStatusId: string;
 
-	@ManyToOne(() => ReportStatus, (reportStatus) => reportStatus.reports)
-	public reportStatus: ReportStatus;
-
 	@Column()
+	@Index()
 	public action: string;
 
 	@Column('text')

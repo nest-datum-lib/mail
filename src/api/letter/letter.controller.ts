@@ -1,290 +1,97 @@
-import getCurrentLine from 'get-current-line';
-import { Controller } from '@nestjs/common';
 import { 
 	MessagePattern,
 	EventPattern, 
 } from '@nestjs/microservices';
-import { BalancerService } from 'nest-datum/balancer/src';
-import * as Validators from 'nest-datum/validators/src';
+import { Controller } from '@nestjs/common';
+import { WarningException } from '@nest-datum-common/exceptions';
+import { TransportService } from '@nest-datum/transport';
+import { TcpOptionController as NestDatumTcpOptionController } from '@nest-datum-common/controller';
+import { 
+	strId as utilsCheckStrId,
+	strName as utilsCheckStrName,
+	strDescription as utilsCheckStrDescription,
+} from '@nest-datum-utils/check';
+import { 
+	checkToken,
+	getUser, 
+} from '@nest-datum/jwt';
 import { LetterService } from './letter.service';
 
 @Controller()
-export class LetterController {
+export class LetterController extends NestDatumTcpOptionController {
 	constructor(
-		private readonly letterService: LetterService,
-		private readonly balancerService: BalancerService,
+		public transportService: TransportService,
+		public service: LetterService,
 	) {
+		super();
 	}
 
-	@MessagePattern({ cmd: 'letter.many' })
+	async validateCreate(options) {
+		if (!utilsCheckStrName(options['name'])) {
+			throw new WarningException(`Property "name" is not valid.`);
+		}
+		if (!utilsCheckStrDescription(options['subject'])) {
+			throw new WarningException(`Property "subject" is not valid.`);
+		}
+		if (!utilsCheckStrDescription(options['textPart'])) {
+			throw new WarningException(`Property "textPart" is not valid.`);
+		}
+		if (!utilsCheckStrId(options['templateId'])) {
+			throw new WarningException(`Property "templateId" is not valid.`);
+		}
+		if (!utilsCheckStrId(options['letterStatusId'])) {
+			throw new WarningException(`Property "letterStatusId" is not valid.`);
+		}
+		return await this.validateUpdate(options);
+	}
+
+	async validateUpdate(options) {
+		return {
+			...await super.validateUpdate(options),
+			...(options['subject'] && utilsCheckStrDescription(options['subject'])) 
+				? { subject: options['subject'] } 
+				: {},
+			...(options['textPart'] && utilsCheckStrDescription(options['textPart'])) 
+				? { textPart: options['textPart'] } 
+				: {},
+			...(options['letterStatusId'] && utilsCheckStrId(options['letterStatusId'])) 
+				? { letterStatusId: options['letterStatusId'] } 
+				: {},
+		};
+	}
+
+	@MessagePattern({ cmd: 'report.many' })
 	async many(payload) {
-		try {
-			const many = await this.letterService.many({
-				user: Validators.token('accessToken', payload['accessToken'], {
-					accesses: [ process['ACCESS_MAIL_LETTER_MANY'] ],
-					isRequired: true,
-				}),
-				relations: Validators.obj('relations', payload['relations']),
-				select: Validators.obj('select', payload['select']),
-				sort: Validators.obj('sort', payload['sort']),
-				filter: Validators.obj('filter', payload['filter']),
-				query: Validators.str('query', payload['query'], {
-					min: 1,
-					max: 255,
-				}),
-				page: Validators.int('page', payload['page'], {
-					min: 1,
-					default: 1,
-				}),
-				limit: Validators.int('limit', payload['limit'], {
-					min: 1,
-					default: 20,
-				}),
-			});
-
-			this.balancerService.decrementServiceResponseLoadingIndicator();
-
-			return {
-				total: many[1],
-				rows: many[0],
-			};
-		}
-		catch (err) {
-			this.balancerService.log(err);
-			this.balancerService.decrementServiceResponseLoadingIndicator();
-
-			return err;
-		}
+		return await super.many(payload);
 	}
 
-	@MessagePattern({ cmd: 'letter.one' })
+	@MessagePattern({ cmd: 'report.one' })
 	async one(payload) {
-		try {
-			const output = await this.letterService.one({
-				user: Validators.token('accessToken', payload['accessToken'], {
-					accesses: [ process['ACCESS_MAIL_LETTER_ONE'] ],
-					isRequired: true,
-				}),
-				relations: Validators.obj('relations', payload['relations']),
-				select: Validators.obj('select', payload['select']),
-				id: Validators.id('id', payload['id'], {
-					isRequired: true,
-				}),
-			});
-
-			this.balancerService.decrementServiceResponseLoadingIndicator();
-
-			return output;
-		}
-		catch (err) {
-			this.balancerService.log(err);
-			this.balancerService.decrementServiceResponseLoadingIndicator();
-
-			return err;
-		}
+		return await super.one(payload);
 	}
 
-	@EventPattern('letter.drop')
+	@EventPattern('report.drop')
 	async drop(payload) {
-		try {
-			await this.letterService.drop({
-				user: Validators.token('accessToken', payload['accessToken'], {
-					accesses: [ process['ACCESS_MAIL_LETTER_DROP'] ],
-					isRequired: true,
-				}),
-				id: Validators.id('id', payload['id'], {
-					isRequired: true,
-				}),
-			});
-			this.balancerService.decrementServiceResponseLoadingIndicator();
-
-			return true;
-		}
-		catch (err) {
-			this.balancerService.log(err);
-			this.balancerService.decrementServiceResponseLoadingIndicator();
-
-			return err;
-		}
+		return await super.drop(payload);
 	}
 
-	@EventPattern('letter.dropMany')
+	@EventPattern('report.dropMany')
 	async dropMany(payload) {
-		try {
-			await this.letterService.dropMany({
-				user: Validators.token('accessToken', payload['accessToken'], {
-					accesses: [ process['ACCESS_MAIL_LETTER_DROP_MANY'] ],
-					isRequired: true,
-				}),
-				ids: Validators.arr('ids', payload['ids'], {
-					isRequired: true,
-					min: 1,
-				}),
-			});
-			this.balancerService.decrementServiceResponseLoadingIndicator();
-
-			return true;
-		}
-		catch (err) {
-			this.balancerService.log(err);
-			this.balancerService.decrementServiceResponseLoadingIndicator();
-
-			return err;
-		}
+		return await super.dropMany(payload);
 	}
 
-	@EventPattern('letter.send')
-	async send(payload) {
-		try {
-			const output = await this.letterService.send({
-				user: Validators.token('accessToken', payload['accessToken'], {
-					accesses: [ process['ACCESS_MAIL_LETTER_CREATE'] ],
-					isRequired: true,
-				}),
-				userId: Validators.id('userId', payload['userId']),
-				letterId: Validators.id('letterId', payload['letterId'], {
-					isRequired: true,
-				}),
-				body: Validators.obj('body', payload['body'], {
-					isRequired: true,
-				}),
-				
-			});
-
-			this.balancerService.decrementServiceResponseLoadingIndicator();
-
-			return output;
-		}
-		catch (err) {
-			this.balancerService.log(err);
-			this.balancerService.decrementServiceResponseLoadingIndicator();
-
-			return err;
-		}
-	}
-
-	@EventPattern('letter.create')
-	async create(payload) {
-		try {
-			const output = await this.letterService.create({
-				user: Validators.token('accessToken', payload['accessToken'], {
-					accesses: [ process['ACCESS_MAIL_LETTER_CREATE'] ],
-					isRequired: true,
-				}),
-				id: Validators.id('id', payload['id']),
-				userId: Validators.id('userId', payload['userId']),
-				letterStatusId: Validators.id('letterStatusId', payload['letterStatusId'], {
-					isRequired: true,
-				}),
-				templateId: Validators.id('templateId', payload['templateId'], {
-					isRequired: true,
-				}),
-				name: Validators.str('name', payload['name'], {
-					isRequired: true,
-					min: 1,
-					max: 255,
-				}),
-				description: Validators.str('description', payload['description'], {
-					min: 1,
-					max: 255,
-				}),
-				subject: Validators.str('subject', payload['subject'], {
-					isRequired: true,
-					min: 1,
-					max: 255,
-				}),
-				textPart: Validators.str('textPart', payload['textPart'], {
-					isRequired: true,
-					min: 1,
-					max: 255,
-				}),
-				isNotDelete: Validators.bool('isNotDelete', payload['isNotDelete']),
-			});
-
-			this.balancerService.decrementServiceResponseLoadingIndicator();
-
-			return output;
-		}
-		catch (err) {
-			this.balancerService.log(err);
-			this.balancerService.decrementServiceResponseLoadingIndicator();
-
-			return err;
-		}
-	}
-
-	@EventPattern('letter.createOptions')
+	@EventPattern('report.createOptions')
 	async createOptions(payload) {
-		try {
-			const output = await this.letterService.createOptions({
-				user: Validators.token('accessToken', payload['accessToken'], {
-					accesses: [ process['ACCESS_MAIL_LETTER_CREATE_OPTIONS'] ],
-					isRequired: true,
-				}),
-				id: Validators.id('id', payload['id']),
-				data: Validators.arr('data', payload['data'], {
-					isRequired: true,
-				}),
-			});
-
-			this.balancerService.decrementServiceResponseLoadingIndicator();
-
-			return output;
-		}
-		catch (err) {
-			this.balancerService.log(err);
-			this.balancerService.decrementServiceResponseLoadingIndicator();
-
-			return err;
-		}
+		return await super.createOptions(payload);
 	}
 
-	@EventPattern('letter.update')
+	@EventPattern('report.create')
+	async create(payload) {
+		return await super.create(payload);
+	}
+
+	@EventPattern('report.update')
 	async update(payload) {
-		try {
-			await this.letterService.update({
-				user: Validators.token('accessToken', payload['accessToken'], {
-					accesses: [ process['ACCESS_MAIL_LETTER_UPDATE'] ],
-					isRequired: true,
-				}),
-				id: Validators.id('id', payload['id']),
-				newId: Validators.id('newId', payload['newId']),
-				userId: Validators.id('userId', payload['userId']),
-				letterStatusId: Validators.id('letterStatusId', payload['letterStatusId']),
-				templateId: Validators.id('templateId', payload['templateId'], {
-					isRequired: true,
-				}),
-				name: Validators.str('name', payload['name'], {
-					min: 1,
-					max: 255,
-				}),
-				description: Validators.str('description', payload['description'], {
-					min: 1,
-					max: 255,
-				}),
-				subject: Validators.str('subject', payload['subject'], {
-					isRequired: true,
-					min: 1,
-					max: 255,
-				}),
-				textPart: Validators.str('textPart', payload['textPart'], {
-					isRequired: true,
-					min: 1,
-					max: 255,
-				}),
-				isNotDelete: Validators.bool('isNotDelete', payload['isNotDelete']),
-				isDeleted: Validators.bool('isDeleted', payload['isDeleted']),
-				createdAt: Validators.date('createdAt', payload['createdAt']),
-			});
-			this.balancerService.decrementServiceResponseLoadingIndicator();
-
-			return true;
-		}
-		catch (err) {
-			this.balancerService.log(err);
-			this.balancerService.decrementServiceResponseLoadingIndicator();
-
-			return err;
-		}
+		return await super.update(payload);
 	}
 }

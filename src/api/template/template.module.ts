@@ -1,33 +1,49 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { 
-	BalancerRepository,
-	BalancerService, 
-} from 'nest-datum/balancer/src';
-import { CacheService } from 'nest-datum/cache/src';
-import { Letter } from '../letter/letter.entity';
-import { TemplateStatus } from '../template-status/template-status.entity';
-import { TemplateTemplateTemplateOption } from '../template-template-template-option/template-template-template-option.entity';
-import { TemplateTemplateOption } from '../template-template-option/template-template-option.entity';
-import { Template } from './template.entity';
+	ReplicaModule,
+	ReplicaService, 
+} from '@nest-datum/replica';
+import { 
+	TransportModule,
+	TransportService, 
+} from '@nest-datum/transport';
+import {
+	CacheModule, 
+	CacheService, 
+} from '@nest-datum/cache';
+import { 
+	SqlModule,
+	SqlService, 
+} from '@nest-datum/sql';
 import { TemplateService } from './template.service';
 import { TemplateController } from './template.controller';
+import { Letter } from '../letter/letter.entity';
+import { TemplateTemplateTemplateOption } from '../template-template-template-option/template-template-template-option.entity';
+import { TemplateOption } from '../template-option/template-option.entity';
+import { TemplateTemplateOption } from '../template-template-option/template-template-option.entity';
+import { Template } from './template.entity';
 
 @Module({
 	controllers: [ TemplateController ],
 	imports: [
 		TypeOrmModule.forFeature([ 
-			TemplateStatus,
-			TemplateTemplateTemplateOption,
+			TemplateOption,
 			TemplateTemplateOption,
 			Template,
+			TemplateTemplateTemplateOption, 
 			Letter,
 		]),
+		ReplicaModule,
+		TransportModule,
+		CacheModule,
+		SqlModule,
 	],
 	providers: [
-		BalancerRepository, 
-		BalancerService,
+		ReplicaService,
+		TransportService,
 		CacheService,
+		SqlService,
 		TemplateService, 
 	],
 })

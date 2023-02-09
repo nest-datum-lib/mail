@@ -1,33 +1,50 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { 
-	BalancerRepository,
-	BalancerService, 
-} from 'nest-datum/balancer/src';
-import { CacheService } from 'nest-datum/cache/src';
-import { LetterLetterOptionController } from './letter-letter-option.controller';
+	ReplicaModule,
+	ReplicaService, 
+} from '@nest-datum/replica';
+import { 
+	TransportModule,
+	TransportService, 
+} from '@nest-datum/transport';
+import {
+	CacheModule, 
+	CacheService, 
+} from '@nest-datum/cache';
+import { 
+	SqlModule,
+	SqlService, 
+} from '@nest-datum/sql';
 import { LetterLetterOptionService } from './letter-letter-option.service';
-import { LetterLetterOption } from './letter-letter-option.entity';
+import { LetterLetterOptionController } from './letter-letter-option.controller';
 import { LetterLetterLetterOption } from '../letter-letter-letter-option/letter-letter-letter-option.entity';
 import { LetterOption } from '../letter-option/letter-option.entity';
 import { Letter } from '../letter/letter.entity';
+import { LetterLetterOption } from './letter-letter-option.entity';
 
 @Module({
 	controllers: [ LetterLetterOptionController ],
 	imports: [
 		TypeOrmModule.forFeature([ 
-			LetterLetterOption,
-			LetterLetterLetterOption,
 			LetterOption,
-			Letter, 
+			LetterLetterOption,
+			Letter,
+			LetterLetterLetterOption, 
 		]),
+		ReplicaModule,
+		TransportModule,
+		CacheModule,
+		SqlModule,
 	],
 	providers: [
-		BalancerRepository, 
-		BalancerService,
+		ReplicaService,
+		TransportService,
 		CacheService,
+		SqlService,
 		LetterLetterOptionService, 
 	],
 })
 export class LetterLetterOptionModule {
 }
+

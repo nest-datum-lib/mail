@@ -1,24 +1,16 @@
 import { 
-	Entity, 
-	Column,
-	PrimaryGeneratedColumn,
+	Entity,
+	Column, 
 	ManyToOne,
-	CreateDateColumn,
-	UpdateDateColumn,
 } from 'typeorm';
+import { OptionOptionOption as NestDatumOptionOptionOption } from '@nest-datum/option';
 import { TemplateTemplateOption } from '../template-template-option/template-template-option.entity';
 import { Template } from '../template/template.entity';
 
 @Entity()
-export class TemplateTemplateTemplateOption {
-	@PrimaryGeneratedColumn('uuid')
-	public id: string;
-
-	@Column({ default: '' })
-	public parentId: string;
-
+export class TemplateTemplateTemplateOption extends NestDatumOptionOptionOption {
 	@Column()
-	public templateTemplateOptionId: string;
+	public TemplateTemplateOptionId: string;
 
 	@ManyToOne(() => TemplateTemplateOption, (templateTemplateOption) => templateTemplateOption.templateTemplateTemplateOptions, {
 		onDelete: 'CASCADE'
@@ -30,22 +22,4 @@ export class TemplateTemplateTemplateOption {
 
 	@ManyToOne(() => Template, (template) => template.templateTemplateTemplateOptions)
 	public template: Template;
-
-	@Column('text')
-	public content: string;
-
-	@CreateDateColumn({ 
-		type: 'timestamp', 
-		precision: null,
-		default: () => 'CURRENT_TIMESTAMP', 
-	})
-	public createdAt: Date;
-
-	@UpdateDateColumn({ 
-		type: 'timestamp', 
-		precision: null,
-		default: () => 'CURRENT_TIMESTAMP',
-		onUpdate: 'CURRENT_TIMESTAMP', 
-	})
-	public updatedAt: Date;
 }

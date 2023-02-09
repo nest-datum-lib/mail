@@ -6,7 +6,7 @@ describe('TemplateTemplateOptionService', () => {
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [TemplateTemplateOptionService],
+			Templates: [TemplateTemplateOptionService],
 		}).compile();
 
 		service = module.get<TemplateTemplateOptionService>(TemplateTemplateOptionService);

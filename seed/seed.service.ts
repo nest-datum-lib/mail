@@ -4,14 +4,7 @@ import {
 	Injectable,
 	Logger,
 } from '@nestjs/common';
-import { CacheService } from 'nest-datum/cache/src';
-import { TemplateStatusSeeder } from './template-status.seeder';
-import { TemplateOptionSeeder } from './template-option.seeder';
-import { TemplateTemplateOptionSeeder } from './template-template-option.seeder';
-import { TemplateTemplateTemplateOptionSeeder } from './template-template-template-option.seeder';
-import { TemplateSeeder } from './template.seeder';
-import { LetterStatusSeeder } from './letter-status.seeder';
-import { LetterSeeder } from './letter.seeder';
+import { CacheService } from '@nest-datum/cache';
 import { SettingSeeder } from './setting.seeder';
 
 @Injectable()
@@ -22,39 +15,15 @@ export class SeedService {
 	constructor(
 		private readonly cacheService: CacheService,
 		private readonly connection: Connection,
-		private readonly templateStatus: TemplateStatusSeeder,
-		private readonly templateOption: TemplateOptionSeeder,
-		private readonly templateTemplateOption: TemplateTemplateOptionSeeder,
-		private readonly templateTemplateTemplateOption: TemplateTemplateTemplateOptionSeeder,
-		private readonly template: TemplateSeeder,
-		private readonly letterStatus: LetterStatusSeeder,
-		private readonly letter: LetterSeeder,
-		private readonly setting: SettingSeeder,
+		private readonly settings: SettingSeeder,
 	) {
 		this.seeders = [
-			this.templateStatus,
-			this.templateOption,
-			this.template,
-			this.templateTemplateOption,
-			this.templateTemplateTemplateOption,
-			this.letterStatus,
-			this.letter,
-			this.setting,
+			this.settings,
 		];
 	}
 
 	async send() {
 		try {
-			await this.cacheService.clear([ 'template', 'status', 'many' ]);
-			await this.cacheService.clear([ 'template', 'status', 'one' ]);
-			await this.cacheService.clear([ 'template', 'option', 'many' ]);
-			await this.cacheService.clear([ 'template', 'option', 'one' ]);
-			await this.cacheService.clear([ 'template', 'many' ]);
-			await this.cacheService.clear([ 'template', 'one' ]);
-			await this.cacheService.clear([ 'letter', 'status', 'many' ]);
-			await this.cacheService.clear([ 'letter', 'status', 'one' ]);
-			await this.cacheService.clear([ 'letter', 'many' ]);
-			await this.cacheService.clear([ 'letter', 'one' ]);
 			await this.cacheService.clear([ 'setting', 'many' ]);
 			await this.cacheService.clear([ 'setting', 'one' ]);
 

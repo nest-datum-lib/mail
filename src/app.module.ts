@@ -1,46 +1,66 @@
 import { RedisModule } from '@liaoliaots/nestjs-redis';
-import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeormConfig } from 'config/typeorm';
-import { redisConfig } from 'config/redis';
-import { BalancerModule } from 'nest-datum/balancer/src';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { Module } from '@nestjs/common';
+import { 
+	ReplicaModule,
+	ReplicaService, 
+} from '@nest-datum/replica';
+import { 
+	TransportModule,
+	TransportService, 
+} from '@nest-datum/transport';
+import {
+	CacheModule, 
+	CacheService, 
+} from '@nest-datum/cache';
+import { 
+	SqlModule,
+	SqlService, 
+} from '@nest-datum/sql';
+import { 
+	redis,
+	sql, 
+} from '@nest-datum-common/config';
+import { SettingModule } from './api/setting/setting.module';
+import { TemplateModule } from './api/template/template.module';
 import { TemplateStatusModule } from './api/template-status/template-status.module';
 import { TemplateOptionModule } from './api/template-option/template-option.module';
 import { TemplateTemplateOptionModule } from './api/template-template-option/template-template-option.module';
-import { TemplateTemplateTemplateOptionModule } from './api/template-template-template-option/template-template-template-option.module';
-import { TemplateModule } from './api/template/template.module';
+import { LetterModule } from './api/letter/letter.module';
 import { LetterStatusModule } from './api/letter-status/letter-status.module';
 import { LetterOptionModule } from './api/letter-option/letter-option.module';
 import { LetterLetterOptionModule } from './api/letter-letter-option/letter-letter-option.module';
-import { LetterLetterLetterOptionModule } from './api/letter-letter-letter-option/letter-letter-letter-option.module';
-import { LetterModule } from './api/letter/letter.module';
-import { ReportStatusModule } from './api/report-status/report-status.module';
 import { ReportModule } from './api/report/report.module';
-import { SettingModule } from './api/setting/setting.module';
+import { ReportStatusModule } from './api/report-status/report-status.module';
+import { AppController } from './app.controller';
 
 @Module({
 	imports: [
-		TypeOrmModule.forRoot(typeormConfig),
-		RedisModule.forRoot(redisConfig),
-		BalancerModule,
+		TypeOrmModule.forRoot(sql),
+		RedisModule.forRoot(redis),
+		ReplicaModule,
+		TransportModule,
+		CacheModule,
+		SqlModule,
 		SettingModule,
-		ReportStatusModule,
-		ReportModule,
+		TemplateModule,
 		TemplateStatusModule,
 		TemplateOptionModule,
 		TemplateTemplateOptionModule,
-		TemplateTemplateTemplateOptionModule,
-		TemplateModule,
+		LetterModule,
 		LetterStatusModule,
 		LetterOptionModule,
 		LetterLetterOptionModule,
-		LetterLetterLetterOptionModule,
-		LetterModule,
+		ReportModule,
+		ReportStatusModule,
 	],
 	controllers: [ AppController ],
-	providers: [ AppService ],
+	providers: [
+		ReplicaService,
+		TransportService,
+		CacheService,
+		SqlService,
+	],
 })
 export class AppModule {
 }

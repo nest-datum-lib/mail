@@ -1,29 +1,42 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { 
-	BalancerRepository,
-	BalancerService, 
-} from 'nest-datum/balancer/src';
-import { CacheService } from 'nest-datum/cache/src';
-import { Letter } from '../letter/letter.entity';
-import { LetterStatus } from './letter-status.entity';
+	ReplicaModule,
+	ReplicaService, 
+} from '@nest-datum/replica';
+import { 
+	TransportModule,
+	TransportService, 
+} from '@nest-datum/transport';
+import {
+	CacheModule, 
+	CacheService, 
+} from '@nest-datum/cache';
+import { 
+	SqlModule,
+	SqlService, 
+} from '@nest-datum/sql';
 import { LetterStatusService } from './letter-status.service';
 import { LetterStatusController } from './letter-status.controller';
+import { LetterStatus } from './letter-status.entity';
 
 @Module({
 	controllers: [ LetterStatusController ],
 	imports: [
-		TypeOrmModule.forFeature([ 
-			Letter,
-			LetterStatus, 
-		]),
+		TypeOrmModule.forFeature([ LetterStatus ]),
+		ReplicaModule,
+		TransportModule,
+		CacheModule,
+		SqlModule,
 	],
 	providers: [
-		BalancerRepository, 
-		BalancerService,
+		ReplicaService,
+		TransportService,
 		CacheService,
+		SqlService,
 		LetterStatusService, 
 	],
 })
 export class LetterStatusModule {
 }
+

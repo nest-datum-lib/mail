@@ -6,6 +6,7 @@ import {
 	UpdateDateColumn,
 	ManyToOne,
 	OneToMany,
+	Index,
 } from 'typeorm';
 import { LetterStatus } from '../letter-status/letter-status.entity';
 import { LetterLetterLetterOption } from '../letter-letter-letter-option/letter-letter-letter-option.entity';
@@ -18,13 +19,12 @@ export class Letter {
 	public id: string;
 
 	@Column({ default: '' })
+	@Index()
 	public userId: string;
 
 	@Column({ default: '' })
+	@Index()
 	public letterStatusId: string;
-
-	@ManyToOne(() => LetterStatus, (letterStatus) => letterStatus.letters)
-	public letterStatus: LetterStatus;
 
 	@Column({ default: '' })
 	public templateId: string;
@@ -33,15 +33,18 @@ export class Letter {
 	public template: Template;
 
 	@Column()
+	@Index()
 	public name: string;
 
 	@Column({ default: '' })
 	public description: string;
 
 	@Column()
+	@Index()
 	public subject: string;
 
 	@Column()
+	@Index()
 	public textPart: string;
 
 	@Column('boolean', { default: false })
