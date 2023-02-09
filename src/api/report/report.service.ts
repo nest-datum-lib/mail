@@ -60,6 +60,13 @@ export class ReportService extends SqlService {
 		delete payload['refreshToken'];
 		delete payload['email'];
 		delete payload['login'];
+
+		try {
+			payload['content'] = JSON.stringify(content);
+		}
+		catch (err) {
+			payload['content'] = 'null';
+		}
 		
 		this.cacheService.clear([ this.entityName, 'many' ]);
 
@@ -69,6 +76,7 @@ export class ReportService extends SqlService {
 				? { userId: payload['userId'] }
 				: {},
 			email,
+			content: JSON.stringify(payload['content']),
 		}));
 
 		const output = await this.repository.save(await this.createProps({
@@ -77,6 +85,11 @@ export class ReportService extends SqlService {
 				? { userId: payload['userId'] }
 				: {},
 			email,
+			content: JSON.stringify({
+				login,
+				toEmail: email,
+				...payload,
+			}),
 		}));
 
 		if (payload['reportStatusId'] === 'mail-report-status-send') {
@@ -110,6 +123,15 @@ export class ReportService extends SqlService {
 				? { id: newId }
 				: {},
 			email,
+			...payload['content']
+				? { 
+					content: JSON.stringify({
+						login,
+						toEmail: email,
+						...payload,
+					}), 
+				}
+				: {},
 		});
 
 		if (payload['reportStatusId'] === 'mail-report-status-send'
