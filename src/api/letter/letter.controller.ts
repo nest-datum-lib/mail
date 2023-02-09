@@ -60,37 +60,37 @@ export class LetterController extends NestDatumTcpOptionController {
 		};
 	}
 
-	@MessagePattern({ cmd: 'report.many' })
+	@MessagePattern({ cmd: 'letter.many' })
 	async many(payload) {
 		return await super.many(payload);
 	}
 
-	@MessagePattern({ cmd: 'report.one' })
+	@MessagePattern({ cmd: 'letter.one' })
 	async one(payload) {
 		return await super.one(payload);
 	}
 
-	@EventPattern('report.drop')
+	@EventPattern('letter.drop')
 	async drop(payload) {
 		return await super.drop(payload);
 	}
 
-	@EventPattern('report.dropMany')
+	@EventPattern('letter.dropMany')
 	async dropMany(payload) {
 		return await super.dropMany(payload);
 	}
 
-	@EventPattern('report.createOptions')
+	@EventPattern('letter.createOptions')
 	async createOptions(payload) {
 		return await super.createOptions(payload);
 	}
 
-	@EventPattern('report.create')
+	@EventPattern('letter.create')
 	async create(payload) {
 		return await super.create(payload);
 	}
 
-	@EventPattern('report.update')
+	@EventPattern('letter.update')
 	async update(payload) {
 		return await super.update(payload);
 	}
