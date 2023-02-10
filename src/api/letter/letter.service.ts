@@ -46,6 +46,7 @@ export class LetterService extends SqlService {
 		description: true,
 		textPart: true,
 		subject: true,
+		templateId: true,
 		isDeleted: true,
 		isNotDelete: true,
 		createdAt: true,
