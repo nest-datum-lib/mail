@@ -3,25 +3,22 @@ import {
 	EventPattern, 
 } from '@nestjs/microservices';
 import { Controller } from '@nestjs/common';
-import { WarningException } from '@nest-datum-common/exceptions';
+import { WarningException } from '@nest-datum/exceptions';
 import { TransportService } from '@nest-datum/transport';
-import { TcpOptionController as NestDatumTcpOptionController } from '@nest-datum-common/controller';
+import { TcpController } from '@nest-datum/controller';
 import { 
 	strId as utilsCheckStrId,
 	strName as utilsCheckStrName,
+	strDescription as utilsCheckStrDescription,
 	strEmail as utilsCheckStrEmail,
 } from '@nest-datum-utils/check';
-import { 
-	checkToken,
-	getUser, 
-} from '@nest-datum/jwt';
 import { TemplateService } from './template.service';
 
 @Controller()
-export class TemplateController extends NestDatumTcpOptionController {
+export class TemplateController extends TcpController {
 	constructor(
-		public transportService: TransportService,
-		public service: TemplateService,
+		protected transportService: TransportService,
+		protected entityService: TemplateService,
 	) {
 		super();
 	}
@@ -75,11 +72,6 @@ export class TemplateController extends NestDatumTcpOptionController {
 	@EventPattern('template.dropMany')
 	async dropMany(payload) {
 		return await super.dropMany(payload);
-	}
-
-	@EventPattern('template.createOptions')
-	async createOptions(payload) {
-		return await super.createOptions(payload);
 	}
 
 	@EventPattern('template.create')

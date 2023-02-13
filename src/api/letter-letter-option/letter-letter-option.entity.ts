@@ -4,13 +4,13 @@ import {
 	ManyToOne,
 	OneToMany,
 } from 'typeorm';
-import { OptionOption as NestDatumOptionOption } from '@nest-datum/option';
+import { OptionOption } from '@nest-datum/option';
 import { LetterLetterLetterOption } from '../letter-letter-letter-option/letter-letter-letter-option.entity';
 import { LetterOption } from '../letter-option/letter-option.entity';
 import { Letter } from '../letter/letter.entity';
 
 @Entity()
-export class LetterLetterOption extends NestDatumOptionOption {
+export class LetterLetterOption extends OptionOption {
 	@Column()
 	public letterOptionId: string;
 

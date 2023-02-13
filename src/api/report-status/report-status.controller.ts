@@ -4,14 +4,14 @@ import {
 } from '@nestjs/microservices';
 import { Controller } from '@nestjs/common';
 import { TransportService } from '@nest-datum/transport';
-import { StatusTcpController as NestDatumStatusTcpController } from '@nest-datum/status';
+import { StatusTcpController } from '@nest-datum/status';
 import { ReportStatusService } from './report-status.service';
 
 @Controller()
-export class ReportStatusController extends NestDatumStatusTcpController {
+export class ReportStatusController extends StatusTcpController {
 	constructor(
-		public transportService: TransportService,
-		public service: ReportStatusService,
+		protected transportService: TransportService,
+		protected entityService: ReportStatusService,
 	) {
 		super();
 	}

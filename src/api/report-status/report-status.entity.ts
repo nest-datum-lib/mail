@@ -1,6 +1,6 @@
 import { Entity } from 'typeorm';
-import { Status as NestDatumStatus } from '@nest-datum/status';
+import { Status } from '@nest-datum/status';
 
 @Entity()
-export class ReportStatus extends NestDatumStatus {
+export class ReportStatus extends Status {
 }

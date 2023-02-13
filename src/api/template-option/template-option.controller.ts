@@ -4,14 +4,14 @@ import {
 } from '@nestjs/microservices';
 import { Controller } from '@nestjs/common';
 import { TransportService } from '@nest-datum/transport';
-import { OptionTcpController as NestDatumOptionTcpController } from '@nest-datum/option';
+import { OptionTcpController } from '@nest-datum/option';
 import { TemplateOptionService } from './template-option.service';
 
 @Controller()
-export class TemplateOptionController extends NestDatumOptionTcpController {
+export class TemplateOptionController extends OptionTcpController {
 	constructor(
-		public transportService: TransportService,
-		public service: TemplateOptionService,
+		protected transportService: TransportService,
+		protected entityService: TemplateOptionService,
 	) {
 		super();
 	}
@@ -44,5 +44,10 @@ export class TemplateOptionController extends NestDatumOptionTcpController {
 	@EventPattern('templateOption.update')
 	async update(payload) {
 		return await super.update(payload);
+	}
+
+	@EventPattern('template.content')
+	async content(payload) {
+		return await super.content(payload);
 	}
 }

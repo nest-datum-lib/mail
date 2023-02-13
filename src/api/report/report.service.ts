@@ -23,50 +23,63 @@ import { Report } from './report.entity';
 
 @Injectable()
 export class ReportService extends SqlService {
-	public entityName = 'report';
-	public entityConstructor = Report;
-	
+	protected entityName = 'report';
+	protected entityConstructor = Report;
+	protected entityWithTwoStepRemoval = true;
+
 	constructor(
-		@InjectRepository(Report) public repository: Repository<Report>,
-		public connection: Connection,
-		public cacheService: CacheService,
-		public emailService: EmailService,
+		@InjectRepository(Report) protected entityRepository: Repository<Report>,
+		protected connection: Connection,
+		protected cacheService: CacheService,
+		protected emailService: EmailService,
 	) {
 		super();
 	}
 
-	protected selectDefaultMany = {
-		id: true,
-		userId: true,
-		reportStatusId: true,
-		action: true,
-		content: true,
-		email: true,
-		letterId: true,
-		createdAt: true,
-	};
+	protected manyGetColumns(customColumns: object = {}) {
+		return ({
+			...super.manyGetColumns(customColumns),
+			userId: true,
+			reportStatusId: true,
+			action: true,
+			content: true,
+			email: true,
+			letterId: true,
+		});
+	}
 
-	protected queryDefaultMany = {
-		id: true,
-		name: true,
-		action: true,
-	};
+	protected oneGetColumns(customColumns: object = {}) {
+		return ({
+			...this.manyGetColumns(customColumns),
+		});
+	}
 
-	async create(payload: object = {}): Promise<any> {
+	protected manyGetQueryColumns(customColumns: object = {}) {
+		return ({
+			...super.manyGetQueryColumns(customColumns),
+			name: true,
+			action: true,
+		});
+	}
+
+	protected async storeProperties(payload: object): Promise<any> {
+		const newId = utilsCheckStrId(payload['newId']) && payload['newId'];
 		const email = payload['email'];
 		const login = payload['login'];
 
 		delete payload['accessToken'];
 		delete payload['refreshToken'];
+		delete payload['newId'];
 		delete payload['email'];
 		delete payload['login'];
-		
-		this.cacheService.clear([ this.entityName, 'many' ]);
 
-		const output = await this.repository.save(await this.createProps({
+		return {
 			...payload,
 			...payload['userId']
 				? { userId: payload['userId'] }
+				: {},
+			...newId
+				? { id: newId }
 				: {},
 			email,
 			content: JSON.stringify({
@@ -74,64 +87,30 @@ export class ReportService extends SqlService {
 				toEmail: email,
 				...payload,
 			}),
-		}));
-
-		if (payload['reportStatusId'] === 'mail-report-status-send') {
-			this.emailService.send(payload['letterId'], email, payload['action'], {
-				login,
-				...payload,
-			});
-		}
-		return output;
+		};
 	}
 
-	async update(payload: object = {}): Promise<any> {
-		const newId = utilsCheckStrId(payload['newId']) && payload['newId'];
-		const email = payload['email'];
-		const login = payload['login'];
+	protected async createProperties(payload: object): Promise<any> {
+		return this.storeProperties(payload);
+	}
 
-		delete payload['accessToken'];
-		delete payload['refreshToken'];
-		delete payload['email'];
-		delete payload['login'];
+	protected async updateProperties(payload: object): Promise<any> {
+		return this.storeProperties(payload);
+	}
 
-		this.cacheService.clear([ this.entityName, 'many' ]);
-		this.cacheService.clear([ this.entityName, 'one' ]);
-
-		await this.repository.update({ id: payload['id'] }, {
-			...await this.createProps({ 
-				login,
-				...payload,
-			}),
-			...newId
-				? { id: newId }
-				: {},
-			email,
-			...payload['content']
-				? { 
-					content: JSON.stringify({
-						login,
-						toEmail: email,
-						...payload,
-					}), 
-				}
-				: {},
-		});
-
-		if (payload['reportStatusId'] === 'mail-report-status-send'
-			&& payload['letterId']
-			&& payload['action']) {
-			this.emailService.send(payload['letterId'], email, payload['action'], {
-				...await this.createProps({ 
-					login,
-					...payload,
-				}),
-				...newId
-					? { id: newId }
-					: {},
-			});
+	protected async createAfter(initialPayload: object, processedPayload: object, data: any): Promise<any> {
+		if ((initialPayload || {})['reportStatusId'] === 'mail-report-status-send') {
+			this.emailService.send(processedPayload['letterId'], processedPayload['email'], processedPayload['action'], initialPayload);
 		}
+		return await this.after(initialPayload, processedPayload, data);
+	}
 
-		return true;
+	protected async updateAfter(initialPayload: object, processedPayload: object, data: any): Promise<any> {
+		if ((initialPayload || {})['reportStatusId'] === 'mail-report-status-send'
+			&& initialPayload['letterId']
+			&& initialPayload['action']) {
+			this.emailService.send(processedPayload['letterId'], processedPayload['email'], processedPayload['action'], initialPayload);
+		}
+		return await this.after(initialPayload, processedPayload, data);
 	}
 }

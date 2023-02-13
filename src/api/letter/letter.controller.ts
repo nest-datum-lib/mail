@@ -5,23 +5,19 @@ import {
 import { Controller } from '@nestjs/common';
 import { WarningException } from '@nest-datum-common/exceptions';
 import { TransportService } from '@nest-datum/transport';
-import { TcpOptionController as NestDatumTcpOptionController } from '@nest-datum-common/controller';
+import { TcpController } from '@nest-datum/controller';
 import { 
 	strId as utilsCheckStrId,
 	strName as utilsCheckStrName,
 	strDescription as utilsCheckStrDescription,
 } from '@nest-datum-utils/check';
-import { 
-	checkToken,
-	getUser, 
-} from '@nest-datum/jwt';
 import { LetterService } from './letter.service';
 
 @Controller()
-export class LetterController extends NestDatumTcpOptionController {
+export class LetterController extends TcpController {
 	constructor(
-		public transportService: TransportService,
-		public service: LetterService,
+		protected transportService: TransportService,
+		protected entityService: LetterService,
 	) {
 		super();
 	}
@@ -81,11 +77,6 @@ export class LetterController extends NestDatumTcpOptionController {
 	@EventPattern('letter.dropMany')
 	async dropMany(payload) {
 		return await super.dropMany(payload);
-	}
-
-	@EventPattern('letter.createOptions')
-	async createOptions(payload) {
-		return await super.createOptions(payload);
 	}
 
 	@EventPattern('letter.create')

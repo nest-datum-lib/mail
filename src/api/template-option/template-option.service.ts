@@ -4,23 +4,30 @@ import {
 	Repository,
 	Connection, 
 } from 'typeorm';
-import { OptionService as NestDatumOptionService } from '@nest-datum/option';
+import { OptionService } from '@nest-datum/option';
 import { CacheService } from '@nest-datum/cache';
+import { TemplateTemplateTemplateOption } from '../template-template-template-option/template-template-template-option.entity';
 import { TemplateTemplateOption } from '../template-template-option/template-template-option.entity';
 import { TemplateOption } from './template-option.entity';
 
 @Injectable()
-export class TemplateOptionService extends NestDatumOptionService {
-	public entityName = 'templateOption';
-	public entityColumnOption = 'templateOptionId';
-	public entityConstructor = TemplateOption;
+export class TemplateOptionService extends OptionService {
+	protected entityName = 'templateOption';
+	protected entityServicedName = 'template';
+	protected entityId = 'templateId';
+	protected entityOptionId = 'templateOptionId';
+	protected entityOptionRelationId = 'templateTemplateOptionId';
+	protected entityConstructor = TemplateOption;
+	protected entityOptionConstructor = TemplateTemplateOption;
+	protected entityOptionRelationConstructor = TemplateTemplateTemplateOption;
 
 	constructor(
-		@InjectRepository(TemplateOption) public repository: Repository<TemplateOption>,
-		@InjectRepository(TemplateTemplateOption) public repositoryOptionOption: Repository<TemplateTemplateOption>,
-		public connection: Connection,
-		public cacheService: CacheService,
+		@InjectRepository(TemplateOption) protected entityRepository: Repository<TemplateOption>,
+		@InjectRepository(TemplateTemplateOption) protected entityOptionRepository: Repository<TemplateTemplateOption>,
+		@InjectRepository(TemplateTemplateTemplateOption) protected entityOptionRelationRepository: Repository<TemplateTemplateTemplateOption>,
+		protected connection: Connection,
+		protected cacheService: CacheService,
 	) {
-		super(repository, repositoryOptionOption, connection, cacheService);
+		super();
 	}
 }
