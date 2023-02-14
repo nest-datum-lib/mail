@@ -52,6 +52,7 @@ import { ReportStatusSeeder } from './report-status.seeder';
 			TemplateStatus,
 			TemplateOption,
 			Template,
+			TemplateTemplateOption,
 			TemplateTemplateTemplateOption,
 			LetterStatus,
 			LetterOption,
