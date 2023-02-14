@@ -6,17 +6,17 @@ import {
 } from 'typeorm';
 import { Promise as Bluebird } from 'bluebird';
 import { v4 as uuidv4 } from 'uuid';
-import { Setting } from '../api/setting/setting.entity';
+import { ReportStatus } from '../api/report-status/report-status.entity';
 import {
-	SETTING_APP_ID,
 	USER_DEFAULT_ID,
-	DATA_TYPE_TEXT_ID,
+	REPORT_STATUS_SEND_ID,
+	REPORT_STATUS_SENT_ID,
 } from './consts';
 
-export class SettingSeeder {
+export class ReportStatusSeeder {
 	constructor(
 		private readonly connection: Connection,
-		@InjectRepository(Setting) private readonly settingRepository: Repository<Setting>,
+		@InjectRepository(ReportStatus) private readonly reportStatusRepository: Repository<ReportStatus>,
 	) {
 	}
 
@@ -27,21 +27,25 @@ export class SettingSeeder {
 			// new transaction
 			await queryRunner.startTransaction();
 			await Bluebird.each([{
-				id: SETTING_APP_ID,
+				id: REPORT_STATUS_SEND_ID,
 				userId: USER_DEFAULT_ID,
-				name: 'App id',
-				description: 'App id.',
-				dataTypeId: DATA_TYPE_TEXT_ID,
-				value: process.env.APP_ID,
+				name: 'Set to send',
+				description: 'Set letter to sending queue.',
+				isNotDelete: true,
+			}, {
+				id: REPORT_STATUS_SENT_ID,
+				userId: USER_DEFAULT_ID,
+				name: 'Sent',
+				description: 'Letter successfully sent.',
 				isNotDelete: true,
 			}], async (data) => {
 				try {
-					await this.settingRepository.insert(data);
+					await this.reportStatusRepository.insert(data);
 				}
 				catch (err) {
 					await queryRunner.rollbackTransaction();
 
-					console.error(`ERROR: setting 2: ${err.message}`);
+					console.error(`ERROR: ReportStatus 2: ${err.message}`);
 				}
 			});
 			await queryRunner.commitTransaction();
@@ -49,7 +53,7 @@ export class SettingSeeder {
 		catch (err) {
 			await queryRunner.rollbackTransaction();
 
-			console.error(`ERROR: setting 1: ${err.message}`);
+			console.error(`ERROR: ReportStatus 1: ${err.message}`);
 		}
 		finally {
 			await queryRunner.release();
