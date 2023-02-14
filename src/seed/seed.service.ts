@@ -35,7 +35,7 @@ export class SeedService {
 	) {
 		this.seeders = [
 			this.settings,
-			this.templateOption,
+			this.templateStatus,
 			this.templateOption,
 			this.template,
 			this.templateTemplateOption,
