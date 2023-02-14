@@ -3,7 +3,7 @@ import {
 	EventPattern, 
 } from '@nestjs/microservices';
 import { Controller } from '@nestjs/common';
-import { WarningException } from '@nest-datum/exceptions';
+import { WarningException } from '@nest-datum-common/exceptions';
 import { TransportService } from '@nest-datum/transport';
 import { TcpController } from '@nest-datum/controller';
 import { 

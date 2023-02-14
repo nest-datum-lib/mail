@@ -38,7 +38,7 @@ import { TemplateOptionSeeder } from './template-option.seeder';
 import { TemplateSeeder } from './template.seeder';
 import { TemplateTemplateOptionSeeder } from './template-template-option.seeder';
 import { TemplateTemplateTemplateOptionSeeder } from './template-template-template-option.seeder';
-import { LetterStatusStatusSeeder } from './letter-status.seeder';
+import { LetterStatusSeeder } from './letter-status.seeder';
 import { LetterSeeder } from './letter.seeder';
 import { ReportStatusSeeder } from './report-status.seeder';
 
@@ -76,7 +76,7 @@ import { ReportStatusSeeder } from './report-status.seeder';
 		TemplateSeeder,
 		TemplateTemplateOptionSeeder,
 		TemplateTemplateTemplateOptionSeeder,
-		LetterStatusStatusSeeder,
+		LetterStatusSeeder,
 		LetterSeeder,
 		ReportStatusSeeder,
 	]
