@@ -13,6 +13,7 @@ import {
 import { TransportService } from '@nest-datum/transport';
 import { CacheService } from '@nest-datum/cache';
 import { generateAccessToken } from '@nest-datum/jwt';
+import { formatUrl as utilsFormatUrl } from '@nest-datum-utils/format';
 import { download as utilsFilesDownload } from '@nest-datum-utils/files';
 import { Template } from '../template/template.entity';
 import { TemplateTemplateTemplateOption } from '../template-template-template-option/template-template-template-option.entity';
@@ -143,7 +144,7 @@ export class EmailService {
 					}],
 					'Subject': letterData['letter']['subject'],
 					'TextPart': letterData['letter']['textPart'],
-					'HTMLPart': await ejs.renderFile(await utilsFilesDownload(`${process.env.SERVICE_FILES_URL}/${viewFile['path']}`, `${process.env.PATH_ROOT}/${viewFile['name']}`, true)),
+					'HTMLPart': await ejs.renderFile(await utilsFilesDownload(utilsFormatUrl(`${process.env.SERVICE_FILES_URL}/${viewFile['path']}`, `${process.env.PATH_ROOT}/${viewFile['name']}`, true))),
 					'CustomID': 'AppGettingStartedTest',
 				}],
 			});
