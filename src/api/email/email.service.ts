@@ -143,7 +143,7 @@ export class EmailService {
 					}],
 					'Subject': letterData['letter']['subject'],
 					'TextPart': letterData['letter']['textPart'],
-					'HTMLPart': await ejs.renderFile(await utilsFilesDownload(`${process.env.SERVICE_FILES_URL}/${viewFile['id']}`, `${process.env.PATH_ROOT}/${viewFile['name']}`, true)),
+					'HTMLPart': await ejs.renderFile(await utilsFilesDownload(`${process.env.SERVICE_FILES_URL}/${viewFile['path']}`, `${process.env.PATH_ROOT}/${viewFile['name']}`, true)),
 					'CustomID': 'AppGettingStartedTest',
 				}],
 			});
