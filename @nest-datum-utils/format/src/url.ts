@@ -16,7 +16,7 @@ const _withProps = (value: string) => {
 	return `${value}?accessToken=${generateAccessToken()}`;
 };
 
-const url = (value: string, intervalUrl: string) => {
+const url = (value: string, intervalUrl: string = `${process.env.SERVICE_FILES_URL}/`) => {
 	if (utilsCheckStrUrl(value)) {
 		if (value.indexOf(intervalUrl) === 0) {
 			return _withProps(value);
