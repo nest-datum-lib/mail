@@ -1,21 +1,16 @@
 import { 
-	Entity, 
-	Column,
-	PrimaryGeneratedColumn,
+	Entity,
+	Column, 
 	ManyToOne,
 	OneToMany,
-	CreateDateColumn,
-	UpdateDateColumn,
 } from 'typeorm';
+import { Bind } from '@nest-datum/bind';
 import { LetterLetterLetterOption } from '../letter-letter-letter-option/letter-letter-letter-option.entity';
 import { LetterOption } from '../letter-option/letter-option.entity';
 import { Letter } from '../letter/letter.entity';
 
 @Entity()
-export class LetterLetterOption {
-	@PrimaryGeneratedColumn('uuid')
-	public id: string;
-
+export class LetterLetterOption extends Bind {
 	@Column()
 	public letterOptionId: string;
 
@@ -27,21 +22,6 @@ export class LetterLetterOption {
 
 	@ManyToOne(() => Letter, (letter) => letter.letterLetterOptions)
 	public letter: Letter;
-
-	@CreateDateColumn({ 
-		type: 'timestamp', 
-		precision: null,
-		default: () => 'CURRENT_TIMESTAMP', 
-	})
-	public createdAt: Date;
-
-	@UpdateDateColumn({ 
-		type: 'timestamp', 
-		precision: null,
-		default: () => 'CURRENT_TIMESTAMP',
-		onUpdate: 'CURRENT_TIMESTAMP', 
-	})
-	public updatedAt: Date;
 
 	@OneToMany(() => LetterLetterLetterOption, (letterLetterLetterOption) => letterLetterLetterOption.letterLetterOption)
 	public letterLetterLetterOptions: LetterLetterLetterOption[];

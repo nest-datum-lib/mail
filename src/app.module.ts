@@ -1,46 +1,40 @@
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
-import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeormConfig } from 'config/typeorm';
-import { redisConfig } from 'config/redis';
-import { BalancerModule } from 'nest-datum/balancer/src';
+import { Module } from '@nestjs/common';
+import { sqlConfig as utilsFormatSqlConfig } from '@nest-datum-utils/format';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { TemplateStatusModule } from './api/template-status/template-status.module';
-import { TemplateOptionModule } from './api/template-option/template-option.module';
-import { TemplateTemplateOptionModule } from './api/template-template-option/template-template-option.module';
-import { TemplateTemplateTemplateOptionModule } from './api/template-template-template-option/template-template-template-option.module';
-import { TemplateModule } from './api/template/template.module';
-import { LetterStatusModule } from './api/letter-status/letter-status.module';
-import { LetterOptionModule } from './api/letter-option/letter-option.module';
-import { LetterLetterOptionModule } from './api/letter-letter-option/letter-letter-option.module';
-import { LetterLetterLetterOptionModule } from './api/letter-letter-letter-option/letter-letter-letter-option.module';
-import { LetterModule } from './api/letter/letter.module';
-import { ReportStatusModule } from './api/report-status/report-status.module';
-import { ReportModule } from './api/report/report.module';
-import { SettingModule } from './api/setting/setting.module';
+import { Tcp as Modules } from './index';
 
 @Module({
 	imports: [
-		TypeOrmModule.forRoot(typeormConfig),
-		RedisModule.forRoot(redisConfig),
-		BalancerModule,
-		SettingModule,
-		ReportStatusModule,
-		ReportModule,
-		TemplateStatusModule,
-		TemplateOptionModule,
-		TemplateTemplateOptionModule,
-		TemplateTemplateTemplateOptionModule,
-		TemplateModule,
-		LetterStatusModule,
-		LetterOptionModule,
-		LetterLetterOptionModule,
-		LetterLetterLetterOptionModule,
-		LetterModule,
+		TypeOrmModule.forRoot(utilsFormatSqlConfig()),
+		RedisModule.forRoot({
+			config: [{
+				namespace: 'Transport',
+				host: process.env.REDIS_TRANSPORT_HOST,
+				port: Number(process.env.REDIS_TRANSPORT_PORT),
+				password: process.env.REDIS_TRANSPORT_PASSWORD,
+				db: Number(process.env.REDIS_TRANSPORT_DB),
+			}, {
+				namespace: 'Cache',
+				host: process.env.REDIS_CACHE_HOST,
+				port: Number(process.env.REDIS_CACHE_PORT),
+				password: process.env.REDIS_CACHE_PASSWORD,
+				db: Number(process.env.REDIS_CACHE_DB),
+			}, {
+				namespace: 'Queue',
+				host: process.env.REDIS_QUEUE_HOST,
+				port: Number(process.env.REDIS_QUEUE_PORT),
+				password: process.env.REDIS_QUEUE_PASSWORD,
+				db: Number(process.env.REDIS_QUEUE_DB),
+			}],
+		}),
+		
+		...Object.keys(Modules).map((key) => Modules[key]),
 	],
 	controllers: [ AppController ],
-	providers: [ AppService ],
+	providers: [],
 })
 export class AppModule {
 }

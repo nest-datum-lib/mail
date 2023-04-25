@@ -1,186 +1,223 @@
-import { v4 as uuidv4 } from 'uuid';
-import Redis from 'ioredis';
-import getCurrentLine from 'get-current-line';
-import { 
-	Inject,
-	Injectable, 
-} from '@nestjs/common';
+const ejs = require('ejs');
+const mailjet = require('node-mailjet');
+
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { 
 	Repository,
 	Connection, 
 } from 'typeorm';
-import { SqlService } from 'nest-datum/sql/src';
-import { CacheService } from 'nest-datum/cache/src';
-import { 
-	ErrorException,
-	NotFoundException, 
-} from 'nest-datum/exceptions/src';
+import { SqlService } from '@nest-datum/sql';
+import { CacheService } from '@nest-datum/cache';
+import { TransportService } from '@nest-datum/transport';
+import { generateAccessToken } from '@nest-datum-common/jwt';
+import { download as utilsFilesDownload } from '@nest-datum-utils/files';
+import { strObj as utilsCheckStrObj } from '@nest-datum-utils/check';
+import { Template } from '../template/template.entity';
+import { TemplateTemplateTemplateOption } from '../template-template-template-option/template-template-template-option.entity';
+import { TemplateTemplateOption } from '../template-template-option/template-template-option.entity';
+import { Letter } from '../letter/letter.entity';
+import { LetterLetterLetterOption } from '../letter-letter-letter-option/letter-letter-letter-option.entity';
+import { LetterLetterOption } from '../letter-letter-option/letter-letter-option.entity';
 import { Report } from './report.entity';
 
 @Injectable()
 export class ReportService extends SqlService {
+	protected readonly repositoryConstructor = Report;
+
 	constructor(
-		@InjectRepository(Report) private readonly reportRepository: Repository<Report>,
-		private readonly connection: Connection,
-		private readonly cacheService: CacheService,
+		@InjectRepository(Report) protected readonly repository: Repository<Report>,
+		@InjectRepository(Letter) public letterRepository: Repository<Letter>,
+		@InjectRepository(LetterLetterLetterOption) private readonly letterLetterLetterOptionRepository: Repository<LetterLetterLetterOption>,
+		@InjectRepository(LetterLetterOption) private readonly letterLetterOptionRepository: Repository<LetterLetterOption>,
+		@InjectRepository(Template) private readonly templateRepository: Repository<Template>,
+		@InjectRepository(TemplateTemplateTemplateOption) private readonly templateTemplateTemplateOptionRepository: Repository<TemplateTemplateTemplateOption>,
+		@InjectRepository(TemplateTemplateOption) private readonly templateTemplateOptionRepository: Repository<TemplateTemplateOption>,
+		protected readonly connection: Connection,
+		protected readonly repositoryCache: CacheService,
+		public transportService: TransportService,
 	) {
 		super();
 	}
 
-	protected selectDefaultMany = {
-		id: true,
-		userId: true,
-		reportStatusId: true,
-		action: true,
-		content: true,
-		createdAt: true,
-		updatedAt: true,
-	};
-
-	protected queryDefaultMany = {
-		id: true,
-		action: true,
-		content: true,
-	};
-
-	async many({ user, ...payload }): Promise<any> {
-		try {
-			const cachedData = await this.cacheService.get([ 'report', 'many', payload ]);
-
-			if (cachedData) {
-				return cachedData;
-			}
-			const output = await this.reportRepository.findAndCount(await this.findMany(payload));
-
-			await this.cacheService.set([ 'report', 'many', payload ], output);
-			
-			return output;
-		}
-		catch (err) {
-			throw new ErrorException(err.message, getCurrentLine(), { user, ...payload });
-		}
-		return [ [], 0 ];
+	protected manyGetColumns(customColumns: object = {}): object {
+		return {
+			...super.manyGetColumns(customColumns),
+			userId: true,
+			reportStatusId: true,
+			action: true,
+			content: true,
+			email: true,
+			letterId: true,
+		};
 	}
 
-	async one({ user, ...payload }): Promise<any> {
-		try {
-			const cachedData = await this.cacheService.get([ 'report', 'one', payload ]);
+	protected manyGetQueryColumns(customColumns: object = {}): object {
+		return {
+			...super.manyGetQueryColumns(customColumns),
+			userId: true,
+			reportStatusId: true,
+			action: true,
+			content: true,
+			email: true,
+			letterId: true,
+		};
+	}
 
-			if (cachedData) {
-				return cachedData;
+	protected oneGetColumns(customColumns: object = {}): object {
+		return {
+			...super.oneGetColumns(customColumns),
+			userId: true,
+			action: true,
+			content: true,
+			email: true,
+		};
+	}
+
+	protected async createAfter(initialPayload: object, processedPayload: object, data: any): Promise<any> {
+		if ((initialPayload || {})['reportStatusId'] === 'happ-mail-report-status-send') {
+			this.send(processedPayload['letterId'], processedPayload['email'], processedPayload['action'], initialPayload);
+		}
+		return await this.after(initialPayload, processedPayload, data);
+	}
+
+	protected async updateAfter(initialPayload: object, processedPayload: object, data: any): Promise<any> {
+		if ((initialPayload || {})['reportStatusId'] === 'happ-mail-report-status-send'
+			&& initialPayload['letterId']
+			&& initialPayload['action']) {
+			this.send(processedPayload['letterId'], processedPayload['email'], processedPayload['action'], initialPayload);
+		}
+		return await this.after(initialPayload, processedPayload, data);
+	}
+
+	async getLetterData(letterId: string) {
+		const letter = await this.letterRepository.findOne({
+			where: {
+				id: letterId,
+			},
+		});
+
+		if (!letter) {
+			throw new Error(`Letter with id "${letterId}" is undefined.`);
+		}
+
+		const letterOptionContent = await this.letterLetterLetterOptionRepository.find({
+			where: {
+				letterId,
+			},
+			relations: {
+				letterLetterOption: {
+					letterOption: true,
+				},
+			},
+		});
+
+		if (!letterOptionContent) {
+			throw new Error(`Letter options with letterId "${letterId}" is undefined.`);
+		}
+
+		const template = await this.templateRepository.findOne({
+			where: {
+				id: letter['templateId'],
+			},
+		});
+
+		if (!template) {
+			throw new Error(`Letter template with id "${letter['templateId']}" is undefined.`);
+		}
+
+		const templateOptionContent = await this.templateTemplateTemplateOptionRepository.find({
+			where: {
+				templateId: letter['templateId'],
+			},
+			relations: {
+				templateTemplateOption: {
+					templateOption: true,
+				},
+			},
+		});
+
+		if (!templateOptionContent) {
+			throw new Error(`Oemplate with templateId "${letter['templateId']}" is undefined.`);
+		}
+		return {
+			letter,
+			letterOptionContent,
+			template,
+			templateOptionContent,
+		};
+	}
+
+	async getViewId(templateOptionContent = []) {
+		let i = 0,
+			viewTarget = '';
+
+		while (i < templateOptionContent.length) {
+			if (templateOptionContent[i].templateTemplateOption['templateOptionId'] === 'happ-mail-template-option-view') {
+				viewTarget = templateOptionContent[i]['content'];
+				break;
 			}
-			const output = await this.reportRepository.findOne(await this.findOne(payload));
+			i++;
+		}
+		return viewTarget;
+	}
+
+	async send(letterId: string, email: string, action: string, body): Promise<any> {
+		const letterData = await this.getLetterData(letterId);
+		const viewId = await this.getViewId(letterData['templateOptionContent']);
 		
-			if (output) {
-				await this.cacheService.set([ 'report', 'one', payload ], output);
-			}
-			if (!output) {
-				return new NotFoundException('Entity is undefined', getCurrentLine(), { user, ...payload });
-			}
-			return output;
+		const accessToken = generateAccessToken({
+			id: process.env.USER_ID,
+			roleId: process.env.USER_ADMIN_ROLE,
+			email: process.env.USER_EMAIL,
+		}, Date.now());
+
+		const viewFile = await this.transportService.send({
+			name: process.env.SERVICE_FILES, 
+			cmd: 'file.one',
+		}, {
+			id: viewId,
+			accessToken,
+		});
+
+		if (utilsCheckStrObj(body['content'])) {
+			body['content'] = JSON.parse(body['content']);
 		}
-		catch (err) {
-			throw new ErrorException(err.message, getCurrentLine(), { user, ...payload });
-		}
-	}
-
-	async drop({ user, ...payload }): Promise<any> {
-		try {
-			this.cacheService.clear([ 'report', 'many' ]);
-			this.cacheService.clear([ 'report', 'one', payload ]);
-
-			await this.dropByIsDeleted(this.reportRepository, payload['id']);
-
-			return true;
-		}
-		catch (err) {
-			throw new ErrorException(err.message, getCurrentLine(), { user, ...payload });
-		}
-	}
-
-	async dropMany({ user, ...payload }): Promise<any> {
-		const queryRunner = await this.connection.createQueryRunner(); 
-
-		try {
-			await queryRunner.startTransaction();
-			
-			this.cacheService.clear([ 'report', 'many' ]);
-			this.cacheService.clear([ 'report', 'one', payload ]);
-
-			let i = 0;
-
-			while (i < payload['ids'].length) {
-				await this.dropByIsDeleted(this.reportRepository, payload['ids'][i]);
-				i++;
-			}
-			await queryRunner.commitTransaction();
-
-			return true;
-		}
-		catch (err) {
-			await queryRunner.rollbackTransaction();
-			await queryRunner.release();
-
-			throw new ErrorException(err.message, getCurrentLine(), { user, ...payload });
-		}
-		finally {
-			await queryRunner.release();
-		}
-	}
-
-	async create({ user, ...payload }): Promise<any> {
-		const queryRunner = await this.connection.createQueryRunner(); 
-
-		try {
-			await queryRunner.startTransaction();
-			
-			this.cacheService.clear([ 'report', 'many' ]);
-
-			const output = await this.reportRepository.save({
-				...payload,
-				userId: payload['userId'] || user['id'] || '',
+		const mailjetConnection = mailjet.connect(process.env.MAILJET_API_KEY, process.env.MAILJET_API_SECRET);
+		const mailjetRequest = mailjetConnection
+			.post('send', {
+				'version': 'v3.1'
+			})
+			.request({
+				'Messages': [{
+					'From': {
+						'Email': process.env.MAILJET_EMAIL,
+						'Name': process.env.MAILJET_NAME,
+					},
+					'To': [{
+						'Email': email,
+						'Name': body['login'] || process.env.USER_LOGIN,
+					}],
+					'Subject': letterData['letter']['subject'],
+					'TextPart': letterData['letter']['textPart'],
+					'HTMLPart': await ejs.renderFile(await utilsFilesDownload(`${process.env.SERVICE_FILES_URL}/${viewFile['path']}?accessToken=${accessToken}`, `${process.env.PATH_ROOT}/${viewFile['name']}`, true), {
+						props: body,
+						data: letterData,
+						process: process,
+					}),
+					'CustomID': 'AppGettingStartedTest',
+				}],
 			});
 
-			await queryRunner.commitTransaction();
-
-			return output;
-		}
-		catch (err) {
-			await queryRunner.rollbackTransaction();
-			await queryRunner.release();
-
-			throw new ErrorException(err.message, getCurrentLine(), { user, ...payload });
-		}
-		finally {
-			await queryRunner.release();
-		}
-	}
-
-	async update({ user, ...payload }): Promise<any> {
-		const queryRunner = await this.connection.createQueryRunner(); 
-
-		try {
-			await queryRunner.startTransaction();
-			
-			this.cacheService.clear([ 'report', 'many' ]);
-			this.cacheService.clear([ 'report', 'one' ]);
-			
-			await this.updateWithId(this.reportRepository, payload);
-			
-			await queryRunner.commitTransaction();
-			
-			return true;
-		}
-		catch (err) {
-			await queryRunner.rollbackTransaction();
-			await queryRunner.release();
-
-			throw new ErrorException(err.message, getCurrentLine(), { user, ...payload });
-		}
-		finally {
-			await queryRunner.release();
-		}
+		await this.repository.save({
+			userId: body['userId'] || process.env.USER_ID,
+			reportStatusId: 'happ-mail-report-status-sent',
+			action,
+			content: JSON.stringify(body),
+		});
+		return {
+			props: body,
+			data: letterData,
+		};
 	}
 }

@@ -4,9 +4,8 @@ import {
 	Column,
 	CreateDateColumn,
 	UpdateDateColumn,
-	ManyToOne,
+	Index,
 } from 'typeorm';
-import { ReportStatus } from '../report-status/report-status.entity';
 
 @Entity()
 export class Report {
@@ -17,12 +16,19 @@ export class Report {
 	public userId: string;
 
 	@Column({ default: '' })
+	@Index()
 	public reportStatusId: string;
 
-	@ManyToOne(() => ReportStatus, (reportStatus) => reportStatus.reports)
-	public reportStatus: ReportStatus;
+	@Column({ default: '' })
+	@Index()
+	public letterId: string;
+
+	@Column({ default: '' })
+	@Index()
+	public email: string;
 
 	@Column()
+	@Index()
 	public action: string;
 
 	@Column('text')
@@ -34,12 +40,4 @@ export class Report {
 		default: () => 'CURRENT_TIMESTAMP', 
 	})
 	public createdAt: Date;
-
-	@UpdateDateColumn({ 
-		type: 'timestamp', 
-		precision: null,
-		default: () => 'CURRENT_TIMESTAMP',
-		onUpdate: 'CURRENT_TIMESTAMP', 
-	})
-	public updatedAt: Date;
 }

@@ -4,10 +4,13 @@ import {
 	Column,
 	CreateDateColumn,
 	UpdateDateColumn,
+	Index,
 	ManyToOne,
 	OneToMany,
 } from 'typeorm';
-import { TemplateStatus } from '../template-status/template-status.entity';
+import {
+	IsEmail,
+} from 'class-validator';
 import { TemplateTemplateTemplateOption } from '../template-template-template-option/template-template-template-option.entity';
 import { TemplateTemplateOption } from '../template-template-option/template-template-option.entity';
 import { Letter } from '../letter/letter.entity';
@@ -18,18 +21,21 @@ export class Template {
 	public id: string;
 
 	@Column({ default: '' })
+	public envKey: string;
+
+	@Column({ default: '' })
+	@Index()
 	public userId: string;
 
 	@Column({ default: '' })
 	public templateStatusId: string;
 
-	@ManyToOne(() => TemplateStatus, (templateStatus) => templateStatus.templates)
-	public templateStatus: TemplateStatus;
-
 	@Column()
+	@Index({ unique: true })
 	public name: string;
 
 	@Column({ default: '' })
+	@Index()
 	public description: string;
 
 	@Column()
@@ -42,7 +48,7 @@ export class Template {
 	public isDeleted: boolean = false;
 
 	@Column('boolean', { default: false })
-	public isNotDelete: boolean;
+	public isNotDelete: boolean = false;
 
 	@CreateDateColumn({ 
 		type: 'timestamp', 
