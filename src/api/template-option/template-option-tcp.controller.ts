@@ -49,8 +49,8 @@ export class TemplateOptionTcpController extends OptionTcpController {
 		return await super.content(payload);
 	}
 
-	@EventPattern('template.updateContent')
-	async updateContent(payload) {
-		return await super.updateContent(payload);
+	@EventPattern('template.contentUpdate')
+	async contentUpdate(payload) {
+		return await super.contentUpdate(payload);
 	}
 }

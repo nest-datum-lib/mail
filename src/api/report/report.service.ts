@@ -49,6 +49,7 @@ export class ReportService extends SqlService {
 			content: true,
 			email: true,
 			letterId: true,
+			createdAt: true,
 		};
 	}
 
@@ -56,11 +57,9 @@ export class ReportService extends SqlService {
 		return {
 			...super.manyGetQueryColumns(customColumns),
 			userId: true,
-			reportStatusId: true,
 			action: true,
 			content: true,
 			email: true,
-			letterId: true,
 		};
 	}
 
@@ -68,9 +67,12 @@ export class ReportService extends SqlService {
 		return {
 			...super.oneGetColumns(customColumns),
 			userId: true,
+			reportStatusId: true,
 			action: true,
 			content: true,
 			email: true,
+			letterId: true,
+			createdAt: true,
 		};
 	}
 

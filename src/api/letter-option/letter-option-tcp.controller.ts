@@ -49,8 +49,8 @@ export class LetterOptionTcpController extends OptionTcpController {
 		return await super.content(payload);
 	}
 
-	@EventPattern('letter.updateContent')
-	async updateContent(payload) {
-		return await super.updateContent(payload);
+	@EventPattern('letter.contentUpdate')
+	async contentUpdate(payload) {
+		return await super.contentUpdate(payload);
 	}
 }
