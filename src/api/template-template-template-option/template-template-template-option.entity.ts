@@ -13,13 +13,17 @@ export class TemplateTemplateTemplateOption extends Many {
 	public templateTemplateOptionId: string;
 
 	@ManyToOne(() => TemplateTemplateOption, (templateTemplateOption) => templateTemplateOption.templateTemplateTemplateOptions, {
-		onDelete: 'CASCADE'
+		onDelete: 'CASCADE',
+		onUpdate: 'CASCADE',
 	})
 	public templateTemplateOption: TemplateTemplateOption;
 
 	@Column()
 	public templateId: string;
 
-	@ManyToOne(() => Template, (template) => template.templateTemplateTemplateOptions)
+	@ManyToOne(() => Template, (template) => template.templateTemplateTemplateOptions, {
+		onDelete: 'CASCADE',
+		onUpdate: 'CASCADE',
+	})
 	public template: Template;
 }

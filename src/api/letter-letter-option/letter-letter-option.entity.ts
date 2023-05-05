@@ -14,15 +14,23 @@ export class LetterLetterOption extends Bind {
 	@Column()
 	public letterOptionId: string;
 
-	@ManyToOne(() => LetterOption, (letterOption) => letterOption.letterLetterOptions)
+	@ManyToOne(() => LetterOption, (letterOption) => letterOption.letterLetterOptions, {
+		onDelete: 'CASCADE',
+		onUpdate: 'CASCADE',
+	})
 	public letterOption: LetterOption;
 
 	@Column()
 	public letterId: string;
 
-	@ManyToOne(() => Letter, (letter) => letter.letterLetterOptions)
+	@ManyToOne(() => Letter, (letter) => letter.letterLetterOptions, {
+		onDelete: 'CASCADE',
+		onUpdate: 'CASCADE',
+	})
 	public letter: Letter;
 
-	@OneToMany(() => LetterLetterLetterOption, (letterLetterLetterOption) => letterLetterLetterOption.letterLetterOption)
+	@OneToMany(() => LetterLetterLetterOption, (letterLetterLetterOption) => letterLetterLetterOption.letterLetterOption, {
+		cascade: true,
+	})
 	public letterLetterLetterOptions: LetterLetterLetterOption[];
 }

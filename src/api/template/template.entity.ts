@@ -65,12 +65,18 @@ export class Template {
 	})
 	public updatedAt: Date;
 
-	@OneToMany(() => TemplateTemplateOption, (templateTemplateOption) => templateTemplateOption.template)
+	@OneToMany(() => TemplateTemplateOption, (templateTemplateOption) => templateTemplateOption.template, {
+		cascade: true,
+	})
 	public templateTemplateOptions: TemplateTemplateOption[];
 
-	@OneToMany(() => TemplateTemplateTemplateOption, (templateTemplateTemplateOption) => templateTemplateTemplateOption.template)
+	@OneToMany(() => TemplateTemplateTemplateOption, (templateTemplateTemplateOption) => templateTemplateTemplateOption.template, {
+		cascade: true,
+	})
 	public templateTemplateTemplateOptions: TemplateTemplateTemplateOption[];
 
-	@OneToMany(() => Letter, (letter) => letter.template)
+	@OneToMany(() => Letter, (letter) => letter.template, {
+		cascade: true,
+	})
 	public letters: Letter[];
 }

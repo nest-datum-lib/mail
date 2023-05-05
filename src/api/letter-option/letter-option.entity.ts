@@ -7,6 +7,8 @@ import { LetterLetterOption } from '../letter-letter-option/letter-letter-option
 
 @Entity()
 export class LetterOption extends Option {
-	@OneToMany(() => LetterLetterOption, (letterLetterOption) => letterLetterOption.letterOption)
+	@OneToMany(() => LetterLetterOption, (letterLetterOption) => letterLetterOption.letterOption, {
+		cascade: true,
+	})
 	public letterLetterOptions: LetterLetterOption[];
 }

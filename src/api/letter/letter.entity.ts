@@ -32,7 +32,10 @@ export class Letter {
 	@Column({ default: '' })
 	public templateId: string;
 
-	@ManyToOne(() => Template, (template) => template.letters)
+	@ManyToOne(() => Template, (template) => template.letters, {
+		onDelete: 'CASCADE',
+		onUpdate: 'CASCADE',
+	})
 	public template: Template;
 
 	@Column()
@@ -71,9 +74,13 @@ export class Letter {
 	})
 	public updatedAt: Date;
 
-	@OneToMany(() => LetterLetterOption, (letterLetterOption) => letterLetterOption.letter)
+	@OneToMany(() => LetterLetterOption, (letterLetterOption) => letterLetterOption.letter, {
+		cascade: true,
+	})
 	public letterLetterOptions: LetterLetterOption[];
 
-	@OneToMany(() => LetterLetterLetterOption, (letterLetterLetterOption) => letterLetterLetterOption.letter)
+	@OneToMany(() => LetterLetterLetterOption, (letterLetterLetterOption) => letterLetterLetterOption.letter, {
+		cascade: true,
+	})
 	public letterLetterLetterOptions: LetterLetterLetterOption[];
 }

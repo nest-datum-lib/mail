@@ -7,6 +7,8 @@ import { TemplateTemplateOption } from '../template-template-option/template-tem
 
 @Entity()
 export class TemplateOption extends Option {
-	@OneToMany(() => TemplateTemplateOption, (templateTemplateOption) => templateTemplateOption.templateOption)
+	@OneToMany(() => TemplateTemplateOption, (templateTemplateOption) => templateTemplateOption.templateOption, {
+		cascade: true,
+	})
 	public templateTemplateOptions: TemplateTemplateOption[];
 }

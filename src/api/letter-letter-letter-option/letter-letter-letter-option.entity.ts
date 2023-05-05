@@ -13,13 +13,17 @@ export class LetterLetterLetterOption extends Many {
 	public letterLetterOptionId: string;
 
 	@ManyToOne(() => LetterLetterOption, (letterLetterOption) => letterLetterOption.letterLetterLetterOptions, {
-		onDelete: 'CASCADE'
+		onDelete: 'CASCADE',
+		onUpdate: 'CASCADE',
 	})
 	public letterLetterOption: LetterLetterOption;
 
 	@Column()
 	public letterId: string;
 
-	@ManyToOne(() => Letter, (letter) => letter.letterLetterLetterOptions)
+	@ManyToOne(() => Letter, (letter) => letter.letterLetterLetterOptions, {
+		onDelete: 'CASCADE',
+		onUpdate: 'CASCADE',
+	})
 	public letter: Letter;
 }

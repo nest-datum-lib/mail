@@ -14,15 +14,23 @@ export class TemplateTemplateOption extends Bind {
 	@Column()
 	public templateOptionId: string;
 
-	@ManyToOne(() => TemplateOption, (templateOption) => templateOption.templateTemplateOptions)
+	@ManyToOne(() => TemplateOption, (templateOption) => templateOption.templateTemplateOptions, {
+		onDelete: 'CASCADE',
+		onUpdate: 'CASCADE',
+	})
 	public templateOption: TemplateOption;
 
 	@Column()
 	public templateId: string;
 
-	@ManyToOne(() => Template, (template) => template.templateTemplateOptions)
+	@ManyToOne(() => Template, (template) => template.templateTemplateOptions, {
+		onDelete: 'CASCADE',
+		onUpdate: 'CASCADE',
+	})
 	public template: Template;
 
-	@OneToMany(() => TemplateTemplateTemplateOption, (templateTemplateTemplateOption) => templateTemplateTemplateOption.templateTemplateOption)
+	@OneToMany(() => TemplateTemplateTemplateOption, (templateTemplateTemplateOption) => templateTemplateTemplateOption.templateTemplateOption, {
+		cascade: true,
+	})
 	public templateTemplateTemplateOptions: TemplateTemplateTemplateOption[];
 }
