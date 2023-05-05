@@ -8,6 +8,9 @@ import { TemplateTemplateOptionService } from './template-template-option.servic
 
 @Controller()
 export class TemplateTemplateOptionTcpController extends BindTcpController {
+	protected readonly mainRelationColumnName: string = 'templateId';
+	protected readonly optionRelationColumnName: string = 'templateOptionId';
+
 	constructor(
 		protected service: TemplateTemplateOptionService,
 	) {

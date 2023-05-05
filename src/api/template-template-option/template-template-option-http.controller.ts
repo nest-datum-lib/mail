@@ -4,6 +4,9 @@ import { TemplateTemplateOptionService } from './template-template-option.servic
 
 @Controller(`${process.env.SERVICE_MAIL}/template/option`)
 export class TemplateTemplateOptionHttpController extends BindHttpController {
+	protected readonly mainRelationColumnName: string = 'templateId';
+	protected readonly optionRelationColumnName: string = 'templateOptionId';
+
 	constructor(
 		protected service: TemplateTemplateOptionService,
 	) {

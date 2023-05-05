@@ -6,6 +6,8 @@ import { TransportService } from '@nest-datum/transport';
 export class LetterLetterOptionHttpTcpController extends BindHttpTcpController {
 	protected readonly serviceName: string = process.env.SERVICE_MAIL;
 	protected readonly entityName: string = 'letterOptionRelation';
+	protected readonly mainRelationColumnName: string = 'letterId';
+	protected readonly optionRelationColumnName: string = 'letterOptionId';
 
 	constructor(
 		protected transport: TransportService,

@@ -8,6 +8,9 @@ import { LetterLetterOptionService } from './letter-letter-option.service';
 
 @Controller()
 export class LetterLetterOptionTcpController extends BindTcpController {
+	protected readonly mainRelationColumnName: string = 'letterId';
+	protected readonly optionRelationColumnName: string = 'letterOptionId';
+
 	constructor(
 		protected service: LetterLetterOptionService,
 	) {
