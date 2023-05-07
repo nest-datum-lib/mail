@@ -25,6 +25,8 @@ export class LetterHttpTcpController extends MainHttpTcpController {
 	protected readonly serviceName: string = process.env.SERVICE_MAIL;
 	protected readonly entityName: string = 'letter';
 	protected readonly entityManyName: string = 'letterOptionRelation';
+	protected readonly mainRelationColumnName: string = 'letterId';
+	protected readonly optionRelationColumnName: string = 'letterOptionId';
 
 	constructor(
 		protected transport: TransportService,

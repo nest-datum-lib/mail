@@ -26,6 +26,8 @@ export class TemplateHttpTcpController extends MainHttpTcpController {
 	protected readonly serviceName: string = process.env.SERVICE_MAIL;
 	protected readonly entityName: string = 'template';
 	protected readonly entityManyName: string = 'templateOptionRelation';
+	protected readonly mainRelationColumnName: string = 'templateId';
+	protected readonly optionRelationColumnName: string = 'templateOptionId';
 
 	constructor(
 		protected transport: TransportService,
