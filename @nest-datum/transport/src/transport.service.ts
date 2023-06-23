@@ -269,7 +269,7 @@ export class TransportService extends RedisService {
 						throw new FailureException(connectionInstanceResponse['message']);
 				}
 			}
-			console.log('66666666666', cmd, { ...payload });
+			console.log('66666666666', cmd, { ...payload }, connectionInstanceResponse);
 
 			return connectionInstanceResponse;
 		}

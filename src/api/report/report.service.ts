@@ -186,6 +186,8 @@ export class ReportService extends SqlService {
 
 		console.log('viewId', viewId, process.env.SERVICE_FILES);
 
+		console.log('$$$$$$$$$$$$$$$$$$', viewFile);
+
 		if (!utilsCheckObjFilled(viewFile) 
 			|| viewFile['status'] !== 200
 			|| viewFile['status'] !== 201) {
