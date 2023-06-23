@@ -182,6 +182,8 @@ export class ReportService extends SqlService {
 			accessToken,
 		});
 
+		console.log('viewFile', viewFile);
+
 		if (utilsCheckStrObj(body['content'])) {
 			body['content'] = JSON.parse(body['content']);
 		}
