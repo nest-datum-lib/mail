@@ -10,9 +10,13 @@ import {
 import { SqlService } from '@nest-datum/sql';
 import { CacheService } from '@nest-datum/cache';
 import { TransportService } from '@nest-datum/transport';
+import { NotFoundException } from '@nest-datum-common/exceptions';
 import { generateAccessToken } from '@nest-datum-common/jwt';
 import { download as utilsFilesDownload } from '@nest-datum-utils/files';
-import { strObj as utilsCheckStrObj } from '@nest-datum-utils/check';
+import { 
+	strObj as utilsCheckStrObj,
+	objFilled as utilsCheckObjFilled, 
+} from '@nest-datum-utils/check';
 import { Template } from '../template/template.entity';
 import { TemplateTemplateTemplateOption } from '../template-template-template-option/template-template-template-option.entity';
 import { TemplateTemplateOption } from '../template-template-option/template-template-option.entity';
@@ -167,13 +171,11 @@ export class ReportService extends SqlService {
 	async send(letterId: string, email: string, action: string, body): Promise<any> {
 		const letterData = await this.getLetterData(letterId);
 		const viewId = await this.getViewId(letterData['templateOptionContent']);
-		
 		const accessToken = generateAccessToken({
 			id: process.env.USER_ID,
 			roleId: process.env.USER_ADMIN_ROLE,
 			email: process.env.USER_EMAIL,
 		}, Date.now());
-
 		const viewFile = await this.transportService.send({
 			name: process.env.SERVICE_FILES, 
 			cmd: 'file.one',
@@ -181,6 +183,14 @@ export class ReportService extends SqlService {
 			id: viewId,
 			accessToken,
 		});
+
+		console.log('viewId', viewId, process.env.SERVICE_FILES);
+
+		if (!utilsCheckObjFilled(viewFile) 
+			|| viewFile['status'] !== 200
+			|| viewFile['status'] !== 201) {
+			throw new NotFoundException(`File "${viewId}" is not found.`);
+		}
 
 		console.log('viewFile', viewFile);
 
