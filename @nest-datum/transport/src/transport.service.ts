@@ -239,6 +239,8 @@ export class TransportService extends RedisService {
 				connectionInstanceResponse = await lastValueFrom(connectionInstance
 					.send({ cmd }, payload)
 					.pipe(map(response => response)));
+
+				console.log('!!!!!!!!!!!', connectionInstanceResponse);
 			}
 			catch (err) {
 				console.log('333333333', cmd, { ...payload }, err);
@@ -267,8 +269,12 @@ export class TransportService extends RedisService {
 						throw new FailureException(connectionInstanceResponse['message']);
 				}
 			}
+			console.log('66666666666', cmd, { ...payload });
+
 			return connectionInstanceResponse;
 		}
+		console.log('777777777777', payload);
+
 		if (utilsCheckObj(payload)) {
 			delete payload['accessToken'];
 			delete payload['refreshToken'];
