@@ -16,6 +16,7 @@ import { download as utilsFilesDownload } from '@nest-datum-utils/files';
 import { 
 	strObj as utilsCheckStrObj,
 	objFilled as utilsCheckObjFilled, 
+	numericInt as utilsCheckNumericInt,
 } from '@nest-datum-utils/check';
 import { Template } from '../template/template.entity';
 import { TemplateTemplateTemplateOption } from '../template-template-template-option/template-template-template-option.entity';
