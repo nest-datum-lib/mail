@@ -184,18 +184,12 @@ export class ReportService extends SqlService {
 			accessToken,
 		});
 
-		console.log('viewId', viewId, process.env.SERVICE_FILES);
-
-		console.log('$$$$$$$$$$$$$$$$$$', viewFile);
-
 		if (!utilsCheckObjFilled(viewFile) 
-			|| viewFile['status'] !== 200
-			|| viewFile['status'] !== 201) {
+			|| (utilsCheckNumericInt(viewFile['status'])
+				&& viewFile['status'] !== 200
+				&& viewFile['status'] !== 201)) {
 			throw new NotFoundException(`File "${viewId}" is not found.`);
 		}
-
-		console.log('viewFile', viewFile);
-
 		if (utilsCheckStrObj(body['content'])) {
 			body['content'] = JSON.parse(body['content']);
 		}
