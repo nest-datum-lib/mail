@@ -207,8 +207,6 @@ export class TransportService extends RedisService {
 		}
 		const connectionInstance = this.connection(replicaData);
 
-		console.log('0000000000000000', replicaData);
-
 		if (!connectionInstance
 			|| !(await this.isConnected(connectionInstance, replicaData['id']))) {
 			throw new NotFoundException(`Replica "${id || name}" not found.`);
@@ -223,8 +221,6 @@ export class TransportService extends RedisService {
 			payload['id'] = uuidv4();
 			payload['createdAt'] = (new Date()).toISOString();
 		}
-		console.log('11111111111', cmd, { ...payload });
-
 		if (cmdIsPostAction
 			|| cmd.includes('.update')
 			|| cmd.includes('.drop')) {
@@ -233,29 +229,19 @@ export class TransportService extends RedisService {
 		else {
 			let connectionInstanceResponse;
 
-			console.log('222222222', cmd, { ...payload });
-
 			try {
 				connectionInstanceResponse = await lastValueFrom(connectionInstance
 					.send({ cmd }, payload)
 					.pipe(map(response => response)));
-
-				console.log('!!!!!!!!!!!', connectionInstanceResponse);
 			}
 			catch (err) {
-				console.log('333333333', cmd, { ...payload }, err);
-
 				throw new FailureException(err.message);
 			}
 			if (!utilsCheckExists(connectionInstanceResponse)) {
-				console.log('444444444', cmd, { ...payload });
-
 				throw new NotFoundException(`Resource not found.`);
 			}
 			else if (utilsCheckObj(connectionInstanceResponse) 
 				&& utilsCheckNumericInt(connectionInstanceResponse['errorCode'])) {
-				console.log('555555555', cmd, { ...payload });
-
 				switch (connectionInstanceResponse['errorCode']) {
 					case 405:
 						throw new MethodNotAllowedException(connectionInstanceResponse['message']);
@@ -269,12 +255,8 @@ export class TransportService extends RedisService {
 						throw new FailureException(connectionInstanceResponse['message']);
 				}
 			}
-			console.log('66666666666', cmd, { ...payload }, connectionInstanceResponse);
-
 			return connectionInstanceResponse;
 		}
-		console.log('777777777777', payload);
-
 		if (utilsCheckObj(payload)) {
 			delete payload['accessToken'];
 			delete payload['refreshToken'];
