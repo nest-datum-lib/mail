@@ -60,8 +60,6 @@ export class LetterService extends MainService {
 			envKey: true,
 			name: true,
 			description: true,
-			fromEmail: true,
-			fromName: true,
 		});
 	}
 }
