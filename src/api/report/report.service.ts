@@ -10,7 +10,7 @@ import {
 import { SqlService } from '@nest-datum/sql';
 import { CacheService } from '@nest-datum/cache';
 import { TransportService } from '@nest-datum/transport';
-import { NotFoundException } from '@nest-datum-common/exceptions';
+import { Exception, NotFoundException } from '@nest-datum-common/exceptions';
 import { generateAccessToken } from '@nest-datum-common/jwt';
 import { download as utilsFilesDownload } from '@nest-datum-utils/files';
 import { 
@@ -170,65 +170,70 @@ export class ReportService extends SqlService {
 	}
 
 	async send(letterId: string, email: string, action: string, body): Promise<any> {
-		const letterData = await this.getLetterData(letterId);
-		const viewId = await this.getViewId(letterData['templateOptionContent']);
-		const accessToken = generateAccessToken({
-			id: process.env.USER_ID,
-			roleId: process.env.USER_ADMIN_ROLE,
-			email: process.env.USER_EMAIL,
-		}, Date.now());
-		const viewFile = await this.transportService.send({
-			name: process.env.SERVICE_FILES, 
-			cmd: 'file.one',
-		}, {
-			id: viewId,
-			accessToken,
-		});
-
-		if (!utilsCheckObjFilled(viewFile) 
-			|| (utilsCheckNumericInt(viewFile['status'])
-				&& viewFile['status'] !== 200
-				&& viewFile['status'] !== 201)) {
-			throw new NotFoundException(`File "${viewId}" is not found.`);
-		}
-		if (utilsCheckStrObj(body['content'])) {
-			body['content'] = JSON.parse(body['content']);
-		}
-		const mailjetConnection = mailjet.connect(process.env.MAILJET_API_KEY, process.env.MAILJET_API_SECRET);
-		const mailjetRequest = mailjetConnection
-			.post('send', {
-				'version': 'v3.1'
-			})
-			.request({
-				'Messages': [{
-					'From': {
-						'Email': process.env.MAILJET_EMAIL,
-						'Name': process.env.MAILJET_NAME,
-					},
-					'To': [{
-						'Email': email,
-						'Name': body['login'] || process.env.USER_LOGIN,
-					}],
-					'Subject': letterData['letter']['subject'],
-					'TextPart': letterData['letter']['textPart'],
-					'HTMLPart': await ejs.renderFile(await utilsFilesDownload(`${process.env.SERVICE_FILES_URL}/${viewFile['path']}?accessToken=${accessToken}`, `${process.env.PATH_ROOT}/${viewFile['name']}`, true), {
-						props: body,
-						data: letterData,
-						process: process,
-					}),
-					'CustomID': 'AppGettingStartedTest',
-				}],
+		try {
+			const letterData = await this.getLetterData(letterId);
+			const viewId = await this.getViewId(letterData['templateOptionContent']);
+			const accessToken = generateAccessToken({
+				id: process.env.USER_ID,
+				roleId: process.env.USER_ADMIN_ROLE,
+				email: process.env.USER_EMAIL,
+			}, Date.now());
+			const viewFile = await this.transportService.send({
+				name: process.env.SERVICE_FILES, 
+				cmd: 'file.one',
+			}, {
+				id: viewId,
+				accessToken,
 			});
-
-		await this.repository.save({
-			userId: body['userId'] || process.env.USER_ID,
-			reportStatusId: 'happ-mail-report-status-sent',
-			action,
-			content: JSON.stringify(body),
-		});
-		return {
-			props: body,
-			data: letterData,
-		};
+	
+			if (!utilsCheckObjFilled(viewFile) 
+				|| (utilsCheckNumericInt(viewFile['status'])
+					&& viewFile['status'] !== 200
+					&& viewFile['status'] !== 201)) {
+				throw new NotFoundException(`File "${viewId}" is not found.`);
+			}
+			if (utilsCheckStrObj(body['content'])) {
+				body['content'] = JSON.parse(body['content']);
+			}
+			const mailjetConnection = mailjet.connect(process.env.MAILJET_API_KEY, process.env.MAILJET_API_SECRET);
+			const mailjetRequest = mailjetConnection
+				.post('send', {
+					'version': 'v3.1'
+				})
+				.request({
+					'Messages': [{
+						'From': {
+							'Email': process.env.MAILJET_EMAIL,
+							'Name': process.env.MAILJET_NAME,
+						},
+						'To': [{
+							'Email': email,
+							'Name': body['login'] || process.env.USER_LOGIN,
+						}],
+						'Subject': letterData['letter']['subject'],
+						'TextPart': letterData['letter']['textPart'],
+						'HTMLPart': await ejs.renderFile(await utilsFilesDownload(`${process.env.SERVICE_FILES_URL}/${viewFile['path']}?accessToken=${accessToken}`, `${process.env.PATH_ROOT}/${viewFile['name']}`, true), {
+							props: body,
+							data: letterData,
+							process: process,
+						}),
+						'CustomID': 'AppGettingStartedTest',
+					}],
+				});
+	
+			await this.repository.save({
+				userId: body['userId'] || process.env.USER_ID,
+				reportStatusId: 'happ-mail-report-status-sent',
+				action,
+				content: JSON.stringify(body),
+			});
+			return {
+				props: body,
+				data: letterData,
+			};
+		} catch(err) {
+			const msg = (err as Error).message;
+			throw new Exception(msg ? msg : "unkown error");
+		}
 	}
 }
