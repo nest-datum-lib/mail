@@ -11,7 +11,7 @@ import { TemplateSeeder } from './template.seeder';
 import { TemplateStatusSeeder } from './template-status.seeder';
 import { TemplateOptionSeeder } from './template-option.seeder';
 import { TemplateTemplateOptionSeeder } from './template-template-option.seeder';
-import { TemplateTemplateTemplateOptionSeeder } from './template_template_template_option.seeder';
+import { TemplateTemplateTemplateOptionSeeder } from './template-template-template-option.seeder';
 
 @Injectable()
 export class SeedService {

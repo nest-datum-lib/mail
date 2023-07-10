@@ -5,7 +5,6 @@ import {
 	Connection, 
 } from 'typeorm';
 import { Promise as Bluebird } from 'bluebird';
-import { encryptPassword } from '@nest-datum-common/jwt';
 import { Template } from '../api/template/template.entity';
 
 export class TemplateSeeder {
@@ -21,32 +20,32 @@ export class TemplateSeeder {
 			// new transaction
 			await queryRunner.startTransaction();
 			await Bluebird.each([{
-				id: "happ-mail-template-base-recovery",
-        userId: "happ-sso-user-admin",
-        templateStatusId: "happ-mail-template-status-active",
-        name: "Base recovery",
-        description: "Base recovery.",
-        fromEmail: "ihor.bielchenko@gmail.com",
-        fromName: "admin",
+				id: `happ-mail-template-base-recovery`,
+        userId: `happ-sso-user-admin`,
+        templateStatusId: `happ-mail-template-status-active`,
+        name: `Base recovery`,
+        description: `Base recovery.`,
+        fromEmail: `ihor.bielchenko@gmail.com`,
+        fromName: `admin`,
         isDeleted: false,
         isNotDelete: true,
-        createdAt: "04/19/2023 06:01:18+0",
-        updatedAt: "04/19/2023 06:01:55+0",
-        envKey: "HAPP_MAIL_TEMPLATE_BASE_RECOVERY"
+        createdAt: (new Date()).toLocaleString(),
+        updatedAt: (new Date()).toLocaleString(),
+        envKey: `HAPP_MAIL_TEMPLATE_BASE_RECOVERY`
 			},
 			{
-        id: "happ-mail-template-base-registration",
-        userId: "happ-sso-user-admin",
-        templateStatusId: "happ-mail-template-status-active",
-        name: "Base registration",
-        description: "Base registration.",
-        fromEmail: "ihor.bielchenko@gmail.com",
-        fromName: "admin",
+        id: `happ-mail-template-base-registration`,
+        userId: `happ-sso-user-admin`,
+        templateStatusId: `happ-mail-template-status-active`,
+        name: `Base registration`,
+        description: `Base registration.`,
+        fromEmail: `ihor.bielchenko@gmail.com`,
+        fromName: `admin`,
         isDeleted: false,
         isNotDelete: true,
-        createdAt: "04/19/2023 06:01:18+0",
-        updatedAt: "04/19/2023 06:01:55+0",
-        envKey: "HAPP_MAIL_TEMPLATE_BASE_REGISTRATION"
+        createdAt: (new Date()).toLocaleString(),
+        updatedAt: (new Date()).toLocaleString(),
+        envKey: `HAPP_MAIL_TEMPLATE_BASE_REGISTRATION`
 			}], async (data) => {
 				try {
 					await this.userRepository.insert(data);
@@ -54,7 +53,7 @@ export class TemplateSeeder {
 				catch (err) {
 					await queryRunner.rollbackTransaction();
 
-					console.error(`ERROR: user 2: ${err.message}`);
+					console.error(`ERROR: TemplateSeeder 1: ${err.message}`);
 				}
 			});
 			await queryRunner.commitTransaction();
@@ -62,7 +61,7 @@ export class TemplateSeeder {
 		catch (err) {
 			await queryRunner.rollbackTransaction();
 
-			console.error(`ERROR: user 1: ${err.message}`);
+			console.error(`ERROR: TemplateSeeder 2: ${err.message}`);
 		}
 		finally {
 			await queryRunner.release();

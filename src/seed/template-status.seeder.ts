@@ -1,11 +1,9 @@
-import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { 
 	Repository,
 	Connection, 
 } from 'typeorm';
 import { Promise as Bluebird } from 'bluebird';
-import { encryptPassword } from '@nest-datum-common/jwt';
 import { TemplateStatus } from '../api/template-status/template-status.entity';
 
 export class TemplateStatusSeeder {
@@ -21,15 +19,15 @@ export class TemplateStatusSeeder {
 			// new transaction
 			await queryRunner.startTransaction();
 			await Bluebird.each([{
-				id: "happ-mail-template-status-active",
-        userId: "happ-sso-user-admin",
-        envKey: "HAPP_MAIL_TEMPLATE_STATUS_ACTIVE",
-        name: "Active",
-        description: "Template is active.",
+				id: `happ-mail-template-status-active`,
+        userId: `happ-sso-user-admin`,
+        envKey: `HAPP_MAIL_TEMPLATE_STATUS_ACTIVE`,
+        name: `Active`,
+        description: `Template is active.`,
         isDeleted: false,
         isNotDelete: true,
-        createdAt: "04/19/2023 06:33:40+0",
-        updatedAt: "04/19/2023 06:33:40+0"
+        createdAt: (new Date()).toLocaleString(),
+        updatedAt: (new Date()).toLocaleString()
 			}], async (data) => {
 				try {
 					await this.userRepository.insert(data);
@@ -37,7 +35,7 @@ export class TemplateStatusSeeder {
 				catch (err) {
 					await queryRunner.rollbackTransaction();
 
-					console.error(`ERROR: user 2: ${err.message}`);
+					console.error(`ERROR: TemplateStatusSeeder 1: ${err.message}`);
 				}
 			});
 			await queryRunner.commitTransaction();
@@ -45,7 +43,7 @@ export class TemplateStatusSeeder {
 		catch (err) {
 			await queryRunner.rollbackTransaction();
 
-			console.error(`ERROR: user 1: ${err.message}`);
+			console.error(`ERROR: TemplateStatusSeeder 2: ${err.message}`);
 		}
 		finally {
 			await queryRunner.release();
